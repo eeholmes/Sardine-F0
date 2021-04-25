@@ -1,0 +1,11 @@
+---
+title: 'Supplemental Information: Ekman Mass Transport and Pumping Calculations'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+header-includes: \usepackage[labelformat=empty]{caption}
+---
+
+```{r child = file.path('SupplementFiles', 'EMT_Calculations.Rmd')}
+```

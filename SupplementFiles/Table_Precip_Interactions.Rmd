@@ -1,0 +1,229 @@
+---
+title: 'Table 3: Covariate tests'
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+header-includes: \usepackage[labelformat=empty]{caption}
+---
+
+```{r echo=FALSE}
+#set the table pre
+if(Supplement){
+  pre <- "S"
+  figset <- "tabsupp:"
+}else{
+  pre <- "B"
+  figset <- "tabappB:"
+}
+```
+
+```{r include=FALSE}
+#here::set_here()
+here::i_am("SupplementFiles/Table_Precip_Interactions.Rmd")
+```
+
+```{r child = file.path(here::here(),'setup.Rmd')}
+```
+
+```{r child = file.path(here::here(),'AppendixFiles','Appendix-Functions.Rmd')}
+```
+
+```{r child = file.path(here::here(),'AppendixFiles','Appendix-Variables.Rmd')}
+```
+
+
+```{r tab3-spawncovnames, echo=FALSE}
+# Make sure data used is consistent across appendices and here
+dat <- dat.spawners[, 
+  c("Year", "spawners0", "spawners1", "spawners2",
+    "nspawners1", "nspawners2")]
+dat$cov0 <- dat.spawners[,"SST.2.10.3.yr.runsum.0"]
+dat$cov3 <- dat.spawners[,"AMO.mon7to6.0"]
+dat$cov1 <- dat.spawners[,"SST.UPW.4.mon6to9.0"]
+dat$cov2 <- dat.spawners[,"Precip.Kerala.mon6to7.0"]
+dat <- subset(dat, Year >= 1983 & Year <= 2015)
+for(i in paste0("cov", 0:3))
+  dat[[i]] <- MARSS::zscore(dat[[i]])
+dat$cov4 <- dat$cov1*dat$cov2
+```
+
+```{r tab3-spawnerapptabeqns, echo=FALSE}
+nullmod <- "$ln(S_t) = ln(S_{t-1}) + \\epsilon_t$"
+basemod <- "$ln(W_t) = \\alpha + s(ln(W_{t-1}) + \\epsilon_t$"
+resp <- "ln(S_t)"
+baseformula <- "spawners0 ~ s(nspawners1, sp=0.6)"
+nullformula <- "spawners0 ~ -1 + offset(spawners1)"
+headval <- paste0("\\textbf{Jul-Sep catch only models ", min(dat$Year), "-", max(dat$Year), " data}")
+modtable <- getmodheadertext(headval)
+```
+
+```{r tab3-spawntable}
+# Null model
+m0 = lm(as.formula(nullformula), data=dat)
+mod <- "m0"
+Model=paste0("null model: ", nullmod)
+tmp1 <- modfun(get(mod), Model)
+tmp1$Adj.R2 <- ""
+modtable <- rbind(modtable,tmp1)
+# Base model
+m1 = gam(as.formula(baseformula), data=dat)
+mod <- "m1"
+Model <- paste0("base model (M):", " ", basemod)
+tmp1 <- modfun(get(mod), Model)
+modtable=rbind(modtable,tmp1)
+lg <- SardineForecast::loogam(m1)
+baseloo <- lg$RMSE
+baseloomae <- lg$MAE
+baseloomd <- lg$MdAE
+baseaic <- SardineForecast::AICc(m1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov0, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(W_t) = M + s(SST)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov1, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(S_t) = M + s(UPW)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov2, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(S_t) = M + s(Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 1
+m2 = gam(as.formula(paste(baseformula, "+ cov1 + cov2 + cov4")), data=dat)
+mod <- "m2"
+Model <- paste0("LI: $ln(S_t) = M + \\beta_1 UPW + \\beta_2 Pr + \\beta_3 (UPW \\times Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 1
+m2 = gam(as.formula(paste(baseformula, "+ cov4")), data=dat)
+mod <- "m2"
+Model <- paste0("LI: $ln(S_t) = M + \\beta (UPW \\times Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 2
+m2 = gam(as.formula(paste(baseformula, "+ s(cov4, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("NLI: $ln(S_t) = M + s(UPW \\times Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 2
+m2 = gam(as.formula(paste(baseformula, "+ ti(cov2, sp=0.6) + ti(cov1, cov2, sp=c(0.6, 0.6))")), data=dat)
+mod <- "m2"
+Model <- paste0("NLI: $ln(S_t) = M + ti(Pr) + ti(UPW, Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+```
+
+```{r tab3-bspawncovnames, echo=FALSE}
+# Make sure data used is consistent across appendices and here
+dat <- dat.nonspawners[, 
+  c("Year", "nspawners0", "nspawners1")]
+dat$cov0 <- dat.nonspawners[,"SST.2.10.3.yr.runsum.0"]
+dat$cov3 <- dat.nonspawners[,"AMO.mon7to6.0"]
+dat$cov1 <- dat.nonspawners[,"SST.UPW.4.mon6to9.0"]
+dat$cov2 <- dat.nonspawners[,"Precip.Kerala.mon6to7.0"]
+dat <- subset(dat, Year >= 1983 & Year <= 2014)
+for(i in paste0("cov", 0:3))
+  dat[[i]] <- MARSS::zscore(dat[[i]])
+dat$cov4 <- dat$cov1*dat$cov2
+```
+
+```{r tab3-nspawnerapptabeqns, echo=FALSE}
+nullmod <- "$ln(W_t) = ln(W_{t-1}) + \\epsilon_t$"
+basemod <- "$ln(W_t) = \\alpha + s(ln(W_{t-1}) + \\epsilon_t$"
+resp <- "ln(W_t)"
+baseformula <- "nspawners0 ~ s(nspawners1, sp=0.6)"
+nullformula <- "nspawners0 ~ -1 + offset(nspawners1)"
+
+modtable = rbind(modtable, spacetmp)
+headval <- paste0("\\textbf{Oct-Mar catch only models ", min(dat$Year), "-", max(dat$Year), " data}")
+modtable <- rbind(modtable, getmodheadertext(headval))
+
+```
+
+```{r tab3-nspawntable}
+# Null model
+m0 = lm(as.formula(nullformula), data=dat)
+mod <- "m0"
+Model=paste0("null model: ", nullmod)
+tmp1 <- modfun(get(mod), Model)
+tmp1$Adj.R2 <- ""
+modtable <- rbind(modtable,tmp1)
+# Base model
+m1 = gam(as.formula(baseformula), data=dat)
+mod <- "m1"
+Model <- paste0("base model (M):", " ", basemod)
+tmp1 <- modfun(get(mod), Model)
+modtable=rbind(modtable,tmp1)
+lg <- SardineForecast::loogam(m1)
+baseloo <- lg$RMSE
+baseloomae <- lg$MAE
+baseloomd <- lg$MdAE
+baseaic <- SardineForecast::AICc(m1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov0, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(W_t) = M + s(SST)$")
+tmp1 <- modfun(get(mod), Model)
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov1, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(W_t) = M + s(UPW)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Main only
+m2 = gam(as.formula(paste(baseformula, "+ s(cov2, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("$ln(W_t) = M + s(Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 1
+m2 = gam(as.formula(paste(baseformula, "+ cov1 + cov2 + cov4")), data=dat)
+mod <- "m2"
+Model <- paste0("LI: $ln(W_t) = M + \\beta_1 UPW + \\beta_2 Pr + \\beta_3 (UPW \\times Pr)$")
+tmp1 <- modfun(get(mod), Model)
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 1
+m2 = gam(as.formula(paste(baseformula, "+ cov4")), data=dat)
+mod <- "m2"
+Model <- paste0("LI: $ln(W_t) = M + \\beta (UPW \\times Pr)$")
+tmp1 <- modfun(get(mod), Model)
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 2
+m2 = gam(as.formula(paste(baseformula, "+ s(cov4, sp=0.6)")), data=dat)
+mod <- "m2"
+Model <- paste0("NLI: $ln(W_t) = M + s(UPW \\times Pr)$")
+tmp1 <- modfun(get(mod), Model) 
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1)
+# Interaction 2
+m2 = gam(as.formula(paste(baseformula, "+ ti(cov2, sp=0.6) + ti(cov1, cov2, sp=c(0.6, 0.6))")), data=dat)
+mod <- "m2"
+Model <- paste0("NLI: $ln(W_t) = M + ti(Pr) + ti(UPW, Pr)$")
+tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+modtable=rbind(modtable,tmp1,spacetmp)
+```
+
+```{r}
+modtable = modtable[,c("Model", "Residual.df", "Adj.R2", "RMSE", "AIC", "LOOCV", "LOOMd")]
+colnames(modtable) <- c("Model", "Resid. df", "Adj. R2", "RMSE", "AICc", "LOOCV", "LOOMdAE")
+if(isLatex) colnames(modtable)=c("Model", "\\shortstack{Resid.\\\\df}", "\\shortstack{Adj.\\\\$R^2$}", "RMSE", "AICc", "\\shortstack{LOOCV\\\\RMSE}", "\\shortstack{LOOCV\\\\MdAE}")
+thecap=paste("Effect of interaction between upwelling and precipitation for the monsoon (Jul-Sep) and post-monsoon (Oct-Mar) catch ($S_t$ and $W_t$) models. The models with upwelling-precipitation interaction are compared to the model with the 2.5 year average regional SST as a covariate (the model with AMO is similar). The upwelling index used is the SST nearshore-offshore differential (the Ekman Mass Transport index performed much more poorly). LI = Linear interaction. NLI = Non-linear interaction. ti() is a tensor (non-linear) interaction.", sep="")
+fullcap=paste("Table ", ref(paste0(tabset,"interaction-models"), pre=pre), ". ", thecap, sep="")
+if(isLatex){
+  latexkable(modtable, fullcap)
+}else{
+ kable(modtable, align=paste0("l", paste0(rep("c",dim(modtable)[2]-1),collapse="")), caption=fullcap, escape=FALSE)
+}
+```

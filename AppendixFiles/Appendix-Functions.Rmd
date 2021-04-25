@@ -1,0 +1,334 @@
+---
+title: 'Appendices: Common Functions'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r echo=FALSE}
+covfun <- function(mod, eqn, NE=NA, baseaic=-Inf, baseloo=-Inf, baseloomae=-Inf, baseloomd=-Inf, digits=3){
+  # a is anova(m1, m2, etc
+  aa = summary(mod)
+  modrmse <- SardineForecast:::loogam(mod)$RMSE
+  ddag <- ""
+  if(modrmse < 0.95*baseloo) ddag <- "$\\ddagger$"
+  if(modrmse < 0.9*baseloo) ddag <- "$\\ddagger\\ddagger$"
+  if(modrmse < 0.8*baseloo) ddag <- "${\\ddagger}{\\ddagger}{\\ddagger}$"
+  #if(modrmse < 0.7*baseloo) ddag <- "${\\ddagger}{\\ddagger}{\\ddagger}{\\ddagger}$"
+
+  modrmse <- SardineForecast:::loogam(mod)$MdAE
+  ddag2 <- ""
+  if(modrmse < 0.95*baseloomd) ddag2 <- "$\\ddagger$"
+  if(modrmse < 0.9*baseloomd) ddag2 <- "$\\ddagger\\ddagger$"
+  if(modrmse < 0.8*baseloomd) ddag2 <- "${\\ddagger}{\\ddagger}{\\ddagger}$"
+  
+  modaic <- SardineForecast::AICc(mod)
+  dag <- ""
+  if(modaic < baseaic-2) dag <- "$\\dagger$"
+  if(modaic < baseaic-5) dag <- "$\\dagger\\dagger$"
+tmp1=data.frame(
+  Model=eqn, 
+  Residual.df=round(mod$df.residual,digits=1), 
+  MASE=round(mean(abs(residuals(mod)))/NE,digits=digits), 
+  MAE=round(mean(abs(residuals(mod))),digits=digits), 
+  RMSE=round(sqrt(mean((residuals(mod))^2)),digits=digits), 
+  LOOCV=paste0(round(SardineForecast:::loogam(mod)$RMSE, digits=digits), ddag),
+  Adj.R2=100*round(aa$r.sq, digits=3),
+  AIC=paste0(round(SardineForecast::AICc(mod), digits=1),dag),
+  LOOMd=paste0(round(SardineForecast:::loogam(mod)$MdAE, digits=digits), ddag2),
+  LOOMAE=paste0(round(SardineForecast:::loogam(mod)$MAE, digits=digits), ""))
+return(tmp1)
+}
+
+modfun <- function(mod, eqn, NE=NA, digits=3){
+aa = summary(mod)
+tmp1=data.frame(
+  Model=eqn, 
+  Residual.df=round(mod$df.residual,digits=1), 
+  MASE=round(mean(abs(residuals(mod)))/NE,digits=digits), 
+  MAE=round(mean(abs(residuals(mod))),digits=digits), 
+  RMSE=round(sqrt(mean((residuals(mod))^2)),digits=digits),
+  LOOCV=round(SardineForecast:::loogam(mod)$RMSE, digits=digits),
+  Adj.R2=100*round(aa$r.sq, digits=3), 
+  AIC=round(AICc(mod), digits=1),
+  LOOMd=round(SardineForecast:::loogam(mod)$MdAE, digits=digits),
+  LOOMAE=round(SardineForecast:::loogam(mod)$MAE, digits=digits),
+  stringsAsFactors=FALSE)
+return(tmp1)
+}
+
+## Header
+getmodheader <- function(dat){
+  Yr1 <- min(dat$Year)
+  Yr2 <- max(dat$Year)
+knitOut=knitr::opts_knit$get("rmarkdown.pandoc.to")
+if(length(knitOut)==0) isLatex=FALSE else isLatex=(knitOut=="latex")
+
+  space <- "&nbsp;"
+  if(isLatex) space <- "\\kern 1em"
+  return(data.frame(
+  Model=paste("catch only models ", Yr1,"-", Yr2, " data", sep=""), 
+  Residual.df=space, 
+  MASE=space,
+  MAE=space, RMSE=space,
+  LOOCV=space,
+  Adj.R2=space, AIC=space, 
+  LOOMd=space, LOOMAE=space,
+  stringsAsFactors=FALSE))
+}
+
+getmodheadertext <- function(text){
+  #detect if making latex
+knitOut=knitr::opts_knit$get("rmarkdown.pandoc.to")
+if(length(knitOut)==0) isLatex=FALSE else isLatex=(knitOut=="latex")
+
+  space <- "&nbsp;"
+  if(isLatex) space <- "\\kern 1em"
+  return(data.frame(
+  Model=text, 
+  Residual.df=space, 
+  MASE=space,
+  MAE=space, RMSE=space,
+  LOOCV=space,
+  Adj.R2=space, AIC=space, 
+  LOOMd=space, LOOMAE=space,
+  stringsAsFactors=FALSE))
+}
+
+# Space
+knitOut=knitr::opts_knit$get("rmarkdown.pandoc.to")
+if(length(knitOut)==0) isLatex=FALSE else isLatex=(knitOut=="latex")
+
+  space <- "&nbsp;"
+  if(isLatex) space <- "\\kern 1em"
+spacetmp = data.frame(Model=space,  Residual.df=space,  MASE=space, MAE=space, RMSE=space, LOOCV=space, Adj.R2=space, AIC=space, LOOMd=space, LOOMAE=space, stringsAsFactors=FALSE)
+
+# Get names
+getcovtit <- function(covname){
+  if(covname=="SST.4.mon10to12.") covtit = "$V_t$ = Oct-Dec SST"
+  if(covname=="SST.2.5.mon6to9.") covtit =  "$V_t$ = Jun-Sep SST - nearshore"
+  if(covname=="SST.2.5.mon9to10.") covtit =  "$V_t$ = Sep-Oct SST - nearshore"
+  if(covname=="SST.2.10.mon3to5.") covtit =  "$V_t$ = Mar-May SST - regional"
+  if(covname=="SST.4.mon7to9.") covtit =  "$V_t$ = Jul-Sep SST"
+  if(covname=="SST.4.mon6to9.") covtit =  "$V_t$ = Jun-Sep SST"
+  if(covname=="SST.4.mon7to12.") covtit =  "$V_t$ = Jul-Dec SST"
+  if(covname=="SST.4.mon1to3.") covtit =  "$V_t$ = Jan-Mar SST"
+  if(covname=="SST.4.mon1to12.") covtit =  "$V_t$ = Jan-Dec SST"
+  if(covname=="SST.4.mon9to10.") covtit =  "$V_t$ = Sep-Oct SST"
+  if(covname=="SST.4.mon1to12.") covtit =  "$V_t$ = Jan-Dec SST"
+  if(covname=="SST.2.10.mon7to12.") covtit =  "$V_t$ = Jul-Dec SST - regional"
+  if(covname=="precip.gpcp.kerala.mon6to7.") covtit = "$V_t$ = Jun-Jul Precipitation - ocean"
+  if(covname=="Precip.Kerala.mon4to5.") covtit = "$V_t$ = Apr-May Precipitation - land"
+  if(covname=="Precip.Kerala.mon6to7.") covtit = "$V_t$ = Jun-Jul Precipitation - land"
+  if(covname=="precip.gpcp.kerala.mon4to5.") covtit = "$V_t$ = Apr-May Precipitation - ocean"
+  if(covname=="SST.2.5.mon10to12.") covtit =  "$V_t$ = Oct-Dec SST - nearshore"
+  if(covname=="Bakun.UPW.mon6to9.") covtit = "$V_t$ = Jun-Sep EMT - pressure-derived"
+  if(covname=="Wind.UPW.4.mon6to9.") covtit = "$V_t$ = Jun-Sep Wind-UPW"
+  if(covname=="SST.UPW.4.mon6to9.") covtit = "$V_t$ = Jun-Sep nearshore-offshore SST differential"
+  if(covname=="SST.2.5.mon6to9.") covtit = "$V_t$ = Jun-Sep SST - nearshore"
+  if(covname=="SST.2.10.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average SST - regional"
+  if(covname=="SST.11.13.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average fo-SST"
+  if(covname=="SST.7.10.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average o-SST"
+  if(covname=="SST.7.13.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average o-SST"
+  if(covname=="SST.2.5.3.yr.runsum.") covtit = "$V_t$ = 2.5-year avereage SST - nearshore"
+  if(covname=="SST.1.13.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average rr-SST"
+  if(covname=="SSTICOAD.2.10.3.yr.runsum.") covtit = "$V_t$ = 2.5-year average SST - regional"
+  if(covname=="ONI.mon1to12.") covtit = "$V_t$ = ONI Jan-Dec average"
+  if(covname=="PDO.mon1to12.") covtit = "$V_t$ = PDO Jan-Dec average"
+  if(covname=="AMO.mon1to12.") covtit = "$V_t$ = AMO Jan-Dec average"
+  if(covname=="ONI.mon7to6.") covtit = "$V_t$ = ONI Jul-Jun average"
+  if(covname=="PDO.mon7to6.") covtit = "$V_t$ = PDO Jul-Jun average"
+  if(covname=="AMO.mon7to6.") covtit = "$V_t$ = AMO Jul-Jun average"
+  if(covname=="DMI.mon9to11.") covtit = "$V_t$ = Sep-Nov DMI"
+  if(covname=="DMI.mon6to9.") covtit = "$V_t$ = Jun-Sep DMI"
+  if(covname=="DMI.3.yr.runsum.") covtit = "$V_t$ = DMI 2.5-year average"
+  if(covname=="log.CHL.4.mon1to3.")   covtit = "$V_t$ = Jan-Mar Chlorophyll"
+  if(covname=="log.CHL.4.mon7to9.")   covtit = "$V_t$ = Jul-Sep Chlorophyll"
+  if(covname=="log.CHL.4.mon10to12.") covtit = "$V_t$ = Oct-Dec Chlorophyll"
+  if(covname=="log.CHL.2.5.mon1to3.")   covtit = "$V_t$ = Jan-Mar CHL - nearshore"
+  if(covname=="log.CHL.2.5.mon7to9.")   covtit = "$V_t$ = Jul-Sep CHL - nearshore"
+  if(covname=="log.CHL.2.5.mon10to12.") covtit = "$V_t$ = Oct-Dec CHL - nearshore"
+  if(covname=="tide.level.interp.mon6to9.") covtit = "$V_t$ = Jun-Sep tide level"
+  if(covname=="tide.level.interp.mon1to12.") covtit = "$V_t$ = Jan-Dec tide level"
+  if(covname=="tide.level.interp.mon9to11.") covtit = "$V_t$ = Sep-Nov tide level"
+  if(covname=="tide.level.interp.mon8to8.") covtit = "$V_t$ = Aug tide level at Kochi"
+  if(covname=="tide.level.interp.mon9to9.") covtit = "$V_t$ = Sep tide level at Kochi"
+  if(covname=="tide.level.interp.mon7to8.") covtit = "$V_t$ = Jul-Aug tide level at Kochi"
+  if(covname=="anomalies.mon6to9.") covtit = "$V_t$ = Jun-Sep tide level anomalies at Kochi"
+  if(covname=="Wetip.UPW.mon1to2.") covtit = "$V_t$ = Jan-Feb Ekman Pumping - tip of India"
+  if(covname=="Weperp.UPW.mon6to9.") covtit = "$V_t$ = Jun-Sep Ekman Pumping - nearshore"
+  if(covname=="EMTperp.UPW.mon6to9.") covtit = "$V_t$ = Jun-Sep Ekman Mass Transport - nearshore"
+  if(covname=="EMTperp.UPW.mon4to5.") covtit = "$V_t$ = Apr-May Ekman Mass Transport - nearshore"
+  if(covname=="Wetip.UPW.mon6to9.") covtit = "$V_t$ = Jun-Sep Ekman Pumping - tip of India"
+
+  return(covtit)
+}
+```
+
+```{r, echo=FALSE}
+makeapptable <- function(dat, nullmod, basemod, nullformula, baseformula, resp, covnamelist, covlags, m3form = "s(cov, sp=0.6)", type=c("linear", "nonlinear"), include.num=TRUE, header=NULL, include.group=TRUE, compact=FALSE, isLatex=TRUE){
+  
+if(missing(header)) seltable <- getmodheader(dat)
+if(!missing(header)) seltable <- getmodheadertext(header)
+
+# Null model
+m0 = lm(as.formula(nullformula), data=dat)
+mod <- "m0"
+Model=paste0("null model: ", nullmod)
+tmp1 <- modfun(get(mod), Model)
+tmp1$Adj.R2 <- ""
+modtable <- tmp1
+# Base model
+m1 = gam(as.formula(baseformula), data=dat)
+mod <- "m1"
+    num <- ifelse(include.num, " 1.", "")
+Model <- paste0("base model (M):", num, " ", basemod)
+tmp1 <- modfun(get(mod), Model)
+modtable=rbind(modtable,tmp1)
+baseaic <- SardineForecast::AICc(m1)
+lg <- SardineForecast::loogam(m1)
+baseloo <- lg$RMSE
+baseloomae <- lg$MAE
+baseloomd <- lg$MdAE
+
+seltable <- rbind(seltable, modtable)
+
+seltable=rbind(seltable, spacetmp)
+
+for(covgroup in names(covnamelist)){
+  #Group header
+  if(isLatex){
+  tmp1 <- spacetmp; tmp1$Model <- paste0("\\textbf{", covgroup, "}")
+  }else{
+  tmp1 <- spacetmp; tmp1$Model <- paste0("**", covgroup, "**")
+  }
+  if(include.group) seltable = rbind(seltable, tmp1, spacetmp)
+
+  for(covname in covnamelist[[covgroup]]){
+  #var header
+  covtit <- getcovtit(covname)
+  tmp1 <- spacetmp; tmp1$Model <- covtit
+  seltable = rbind(seltable, tmp1)
+  
+  for(i in 1:length(covlags[[covname]])){
+    lag <- covlags[[covname]][i]
+    let <- letters[i]
+    tlab <- ifelse(lag==0, "t", "t-1")
+    dat$cov=dat[[paste(covname, lag, sep="")]]
+    m1 = gam(as.formula(baseformula), data=dat)
+    m2 = gam(as.formula(paste(baseformula, "+ cov")), data=dat)
+    m3 = gam(as.formula(paste(baseformula, "+", m3form)), data=dat)
+  
+    if("linear" %in% type){
+    mod <- "m2"
+    num <- ifelse(include.num, paste0("2",let,". "), "  ")
+    Model=paste0(num, "$", resp, "$ = M + $\\beta V_{", tlab,"}$")
+    tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+    seltable=rbind(seltable,tmp1)
+    }
+  
+    if("nonlinear" %in% type){
+      num <- ifelse(include.num, paste0("3",let,". "), "  ")
+    mod <- "m3"
+    covf <- ifelse(stringr::str_detect(m3form, "poly"),"p","s")
+    Model <- paste0(num, "$", resp, "$ = M + $", covf, "(V_{", tlab, "})$")
+    tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd)
+    seltable=rbind(seltable,tmp1)
+    }
+  }
+  if(!compact) seltable <- rbind(seltable, spacetmp)
+  }
+}
+seltable
+}
+```
+
+```{r echo=FALSE}
+latexkable <- function(dat, fullcap){
+x <- kable(dat, align=paste0("p{8cm}", paste0(rep("c",dim(dat)[2]-1),collapse="")), caption=fullcap, escape=FALSE, booktab=TRUE, longtable=TRUE, format="latex")
+x <- kableExtra::kable_styling(x, latex_options = c("repeat_header"), repeat_header_text="", repeat_header_method="replace")
+x <- kableExtra::collapse_rows(x, latex_hline = "none")
+return(x)
+}
+```
+
+```{r, echo=FALSE}
+maketable3 <- function(dat, nullmod, basemod, nullformula, baseformula, resp, covnamelist, covlags, m3form = "s(cov, sp=0.6)", type=c("linear", "nonlinear"), include.num=TRUE, header=NULL, include.group=TRUE, compact=FALSE){
+  
+seltable <- getmodheadertext(header)
+
+# Null model
+m0 = lm(as.formula(nullformula), data=dat)
+mod <- "m0"
+Model=paste0("null model: ", nullmod)
+tmp1 <- modfun(get(mod), Model, digits=2)
+tmp1$Adj.R2 <- ""
+modtable <- tmp1
+# Base model
+m1 = gam(as.formula(baseformula), data=dat)
+mod <- "m1"
+    num <- ifelse(include.num, " 1.", "")
+Model <- paste0("base (M):", num, " ", basemod)
+tmp1 <- modfun(get(mod), Model, digits=2)
+modtable=rbind(modtable,tmp1)
+baseaic <- SardineForecast::AICc(m1)
+lg <- SardineForecast::loogam(m1)
+baseloo <- lg$RMSE
+baseloomae <- lg$MAE
+baseloomd <- lg$MdAE
+# covariate model
+if("linear" %in% type){
+  Model=paste0("linear covariate model: $", resp, "$ = M + $\\beta V_t$")
+  tmp1 <- getmodheadertext(Model)
+  modtable=rbind(modtable,tmp1)
+}
+if("nonlinear" %in% type){
+   covf <- ifelse(stringr::str_detect(m3form, "poly"),"p","s")
+    Model <- paste0("nonlinear covariate model: $", resp, "$ = M + $", covf, "(V_t)$")
+  tmp1 <- getmodheadertext(Model)
+  modtable=rbind(modtable,tmp1)
+}
+
+
+seltable <- rbind(seltable, modtable)
+
+seltable=rbind(seltable, spacetmp)
+
+for(covgroup in names(covnamelist)){
+
+  for(covname in covnamelist[[covgroup]]){
+  #var header
+  covtit <- getcovtit(covname)
+  covtit <- stringr::str_remove(covtit, "$V_t$ = ")
+
+  for(i in 1:length(covlags[[covname]])){
+    lag <- covlags[[covname]][i]
+    let <- letters[i]
+    tlab <- ifelse(lag==0, "t", "t-1")
+    dat$cov=dat[[paste(covname, lag, sep="")]]
+    m1 = gam(as.formula(baseformula), data=dat)
+    m2 = gam(as.formula(paste(baseformula, "+ cov")), data=dat)
+    m3 = gam(as.formula(paste(baseformula, "+", m3form)), data=dat)
+  
+    if("linear" %in% type){
+    mod <- "m2"
+    Model <- covtit
+    tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd, digits=2)
+    seltable=rbind(seltable,tmp1)
+    }
+  
+    if("nonlinear" %in% type){
+    mod <- "m3"
+     Model <- covtit
+    tmp1 <- covfun(get(mod), Model, baseaic=baseaic, baseloo=baseloo, baseloomae=baseloomae, baseloomd=baseloomd, digits=2)
+    seltable=rbind(seltable,tmp1)
+    }
+  }
+  if(!compact) seltable <- rbind(seltable, spacetmp)
+  }
+  if(compact) seltable <- rbind(seltable, spacetmp)
+}
+seltable
+}
+```

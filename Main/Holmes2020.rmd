@@ -1,0 +1,1795 @@
+# Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)
+
+Elizabeth Eli Holmes$^1$, Smitha BR$^2$, Kumar Nimit$^3$, Sourav Maity$^3$, David M. Checkley, Jr.$^4$, Mark L. Wells$^5$, Vera L. Trainer$^1$
+
+1\. Northwest Fisheries Science Center, National Marine Fisheries
+Service, NOAA, Seattle, WA, USA.
+
+2\. Centre for Marine Living Resources and Ecology, Ministry of Earth
+Sciences, Kochi, India.
+
+3\. Indian National Centre for Ocean Information Services, Ministry of
+Earth Sciences, Hyderabad, India.
+
+4\. Scripps Institution of Oceanography, University of California San
+Diego, CA, USA.
+
+5\. School of Marine Sciences, University of Maine, Orono, ME, USA.
+
+**Corresponding author**: Elizabeth Eli Holmes, PhD. Northwest Fisheries
+Science Center, 2725 Montlake Blvd E, Seattle, WA 98112 USA,
++1-206-419-6164, eli.holmes\@noaa.gov
+
+**Running title**: Improving landings forecasts with covariates
+
+**Keywords:** Indian oil sardine, catch prediction, GAM modeling,
+dynamic linear modeling, climate, sea surface temperature, remote
+sensing, Southeast Arabian Sea, Multidecadal Oscillation
+
+**Author Contributions:** All authors were involved in the
+conceptualization and writing -- review and editing. Individual authors
+had these additional roles. Elizabeth Holmes: Data curation,
+methodology, formal analysis, software, and writing -- original draft.
+Smitha BR: Writing -- original draft. Kumar Nimit: Data curation and
+writing -- original draft. Sourav Maity: Visualization. David Checkley
+and Mark Wells: Methodology, writing -- revisions and review. Vera
+Trainer: Funding acquisition and project supervision.
+
+**ACKNOWLEDGEMENTS**
+
+We thank the U.S. National Marine Fisheries Service and the Indian
+Ministry of Earth Sciences for support of the joint U.S.-Indian research
+project: "Collaboration on the Development of a Fisheries and Harmful
+Algal Bloom and Monitoring and Prediction System in Indian Seas" which
+jointly provided the financial support for the research visits. The
+visits took place at the Indian National Centre for Ocean Information
+Services (INCOIS) and Centre for Marine Living Resources and Ecology
+(CMLRE). We thank these institutes for their support. We would like to
+specifically thank Dr. Usha Varanasi (University of Washington) for her
+vision, knowledge and perseverance in conceptualizing, initiating and
+sustaining this important fisheries science collaboration between the
+governments of India and the USA. We would also like to acknowledge the
+support of Dr. S.S.C Shenoi (INCOIS), Dr. M. Sudhakar (CMLRE), Dr. N.
+Saravanane (CMRLE), Dr. Ned Cyr, and Ed Gorecki (NOAA). The sardine
+landings data have been collected and analyzed by the Central Marine
+Fisheries Research Institute (Kochi, India) since the 1950s; we
+acknowledge the many researchers involved in collecting and maintaining
+this long-term data set. We also thank the many INCOIS, CMLRE, and CMFRI
+scientists who participated in the research visits and who helped us
+understand the biology, fishery and fishery data and gave input into the
+analyses.
+
+# 
+
+# ABSTRACT
+
+Commercial landings of sardines are known to show strong year-to-year
+fluctuations. A key driver is thought to be environmental variability,
+to which small forage fish are especially sensitive. We examined the
+utility of including environmental covariates in forecasts for landings
+of the Indian oil sardine using a long-term time series of quarterly
+catches. Potentially influential variables examined included
+precipitation, upwelling intensity, sea surface temperature (SST), and
+chlorophyll-a concentration. All of these have been shown to be
+important for oil sardine growth and survival, spawning and/or movement
+into the nearshore fishing regions. However, improving out-of-sample
+landings forecasts using environmental covariates has often proven
+elusive. We tested the inclusion of environmental covariates in forecast
+models using generalized additive models, which allow for non-linear
+responses, and dynamic linear models, which allow for time-varying
+responses. Only two environmental covariates improved out-of-sample
+prediction: the 2.5-year average regional SST and precipitation over
+land during June-July. The most significant improvement was with the SST
+covariate and post-monsoon landings with a 19-22% reduction in
+mean-squared prediction error. Models with the second best covariate,
+monsoon precipitation over land, provided a 4-8% reduction in prediction
+error. We also tested large-scale ocean climate teleconnection indices.
+One, an index of the Atlantic Multidecadal Oscillation, also improved
+out-of-sample predictions similarly to the multiyear average regional
+SST. The earth's changing climate is associated with both rapid warming
+in the Western Indian Ocean and changes to monsoon rainfall patterns.
+Our work highlights these as key variables that can improve forecasting
+of oil sardine landings.
+
+# 1 INTRODUCTION
+
+Environmental variability is known to be a key driver of population
+variability for small forage fish, such as sardine, anchovy, and herring
+(Alheit & Hagen, 1997; Checkley, Asch, & Rykaczewski, 2017; Cury et al.,
+2000). In particular, ocean temperature and upwelling dynamics have been
+shown to substantially affect the recruitment success and biomass of
+European and Pacific sardines (*Sardina pilchardus* and *Sardinops
+sagax*, respectively; Alheit et al., 2012; Garza-Gil, Varela-Lafuente,
+Caballero-Míguez, & Torralba-Cano, 2015; Jacobson & MacCall, 1995;
+Lindegren & Checkley, 2012; Lindegren, Checkley, Rouyer, MacCall, &
+Stenseth, 2013; Rykaczewski & Checkley, 2008). The Indian oil sardine
+(*Sardinella longiceps* Valenciennes, 1847) is among the most
+commercially important fish resources along the southwestern coast of
+India---historically comprising up to 20% of the total marine fish
+landings in India (Vivekanandan, Srinath, Pillai, Immanuel, & Kurup,
+2003). Similar to landings of other sardines, oil sardine landings show
+strong interannual fluctuations with larger decadal booms and busts, but
+Indian oil sardine landings also have an unusually strong seasonal cycle
+driven by the summer monsoon. Landings peak in October--December, after
+the summer monsoon, and reach a nadir in April--June.
+
+Two environmental variables, precipitation and coastal upwelling
+intensity, have been the focus of much research on the effect of the
+ocean environment on Indian oil sardine life history and landings.
+Precipitation during the summer monsoon and the day of monsoon arrival
+are thought to act as direct or indirect cues for spawning (Antony Raja,
+1969, 1974; Jayaprakash, 2002; Murty & Edelman, 1966; Pitchaikani &
+Lipton, 2012; Srinath, 1998; Xu & Boyce, 2009). At the same time,
+intense monsoon rain over land causes high nutrient flux from rivers
+into the shallow nearshore regions which causes eutrophication and
+anoxia (Chauhan et al., 2011). The strong seasonal upwelling along the
+southwestern coast of India is also thought to be a key driver of
+variability in oil sardine abundance and catches. Coastal upwelling
+during the summer monsoon has dual effects: it fuels productivity but at
+high levels brings low oxygen water to the surface which can cause fish
+to move offshore where they are inaccessible to the fishery, while
+downwelling during spring is thought to promote the spring migration of
+adults into the nearshore where they are exposed to the fishery (Hamza,
+Valsala, Mallissery, & George, 2020). Correlations have been identified
+between landings and various indices of upwelling intensity (Hamza et
+al., 2020; Jayaprakash, 2002; Kripa et al., 2015; Longhurst & Wooster,
+1990; Madhupratap, Shetye, Nair, & Nair, 1994; Murty & Edelman, 1966;
+Srinath, 1998; Thara, 2011); direct measures of upwelling-associated
+productivity (George et al., 2012; Madhupratap et al., 1994; Manjusha,
+Jayasankar, Remya, Ambrose, & Vivekanandan, 2013; Menon et al., 2019;
+Nair, 1952; Nair & Subrahmanyan, 1955; Piontkovski, Al Oufi, & Al
+Jufaily, 2014; Pitchaikani & Lipton, 2012); and the cold nearshore sea
+surface temperatures caused by upwelling (Annigeri, 1969; Pillai, 1991;
+Prabhu & Dhulkhed, 1970; Supraba et al., 2016).
+
+In addition, to these regional environmental variables, climate
+teleconnection indices which capture large-scale ocean modes have also
+been examined for association with fisheries landings. Large-scale ocean
+climate modes, such as the El Niño--Southern Oscillation (ENSO), Indian
+Ocean Dipole (IOD) and Atlantic Multidecadal Oscillation (AMO), have
+cascading effects on a variety of ocean conditions that affect small
+pelagics (Alheit & Hagen, 1997; Alheit et al., 2019; Bakun, Roy, &
+Lluch-Cota, 2008; Schwartzlose et al., 2010). Correlations have been
+found between ocean climate indices and oil sardine landings (Hamza et
+al., 2020; Rohit et al., 2018; Supraba et al., 2016), as well as with
+coastal anoxic events (Vallivattathillam et al., 2017) and chlorophyll
+blooms (Currie et al., 2013) in our study region.
+
+This long and rich history of research on the Indian oil sardine
+provides a strong foundation for selecting and specifying the
+environmental factors that are most likely affecting the abundance and
+catchability of this important commercial species. In this paper, we
+study the utility of using these environmental covariates to improve
+out-of-sample landings predictions for the oil sardine, with the
+ultimate goal of improving short-term operational forecasts.
+
+## 
+
+## 1.1 Modeling and forecasting fishery landings
+
+The modeling and forecasting of landings using time-series models has a
+long history in fisheries research (Cohen & Stone, 1987; Farmer &
+Froeschke, 2015; Georgakarakos, Doutsoubas, & Valavanis, 2006; Hanson,
+Vaughan, & Narayan, 2006; Lawer, 2016; Lloret, Lleonart, & Sole, 2000;
+Mendelssohn, 1981; Nobel & Sathianandan, 1991; Prista, Diawara, Costa, &
+Jones, 2011; Stergiou & Christou, 1996), including for oil sardines
+(Sajna et al., 2019; Srinath, 1998; Venugopalan & Srinath, 1998). These
+models can be used to identify variables correlated with catch
+fluctuations and to provide short-term landings forecasts, which are
+useful for fishery managers (e.g., Farmer & Froeschke, 2015) and the
+fishing industry (e.g., Hanson et al., 2006; Schaaf, Sykes, & Chapoton,
+1975).
+
+One of the interesting puzzles in research on landings forecasting, and
+forecasting in general, is that it is often difficult to improve on
+simple low-dimensional autoregressive forecast models, that is a
+forecast that is a simple function of past values (Ward, Holmes,
+Thorson, & Collen, 2014), and adding environmental covariates often
+degrades the forecast due to the added parameter estimation costs. The
+Indian oil sardine offers a unique opportunity to study the utility of
+environmental covariates for landings forecasts because there is
+extensive prior research of the environmental variables that influence
+the oil sardine's ocean environment and its exposure to the fishery and
+there is a long-term quarterly catch time series derived from a
+large-scale stratified statistical survey beginning in the 1950s
+(Srinath, Kuriakose, & Mini, 2005).
+
+We first developed an autoregressive base catch model using only the
+prior year landings to explain the current year landings. Environmental
+covariates were then added to the base model and we examined whether the
+covariate decreased the out-of-sample prediction errors and explained
+catch variability beyond that explained by the base model. We tested
+models with linear, non-linear and time-varying covariate effects. We
+focused primarily on covariates derived from remote sensing products due
+to their broad spatial availability and temporal resolution, which make
+them practical for future operational forecasting efforts. The
+covariates were selected based on prior research supporting their
+correlation with nearshore productivity, juvenile growth and survival,
+and movement into or out of the nearshore (where they are exposed to the
+fishery); see Table 1.
+
+### 
+
+### 1.2 Study area
+
+The study area is located off the Kerala coast of India (Figure 1 and
+2), where the majority of Indian oil sardines are landed and where this
+species comprises about 40% of the marine fish catch (Srinath, 1998;
+Vivekanandan et al., 2003). It is in the Southeast Arabian Sea, one of
+the world's important seasonal upwelling zones (Habeebrehman et al.,
+2008; Madhupratap, Gopalakrishnan, Haridas, & Nair, 2001). The portion
+of the study area falling between 9$^{\circ}$N$\text{\ and}$
+13$^{\circ}$N has especially intense upwelling in June--September due to
+the combined effects of wind stress (Figure 2) and remote forcing (BR,
+2010; BR, Sanjeevan, Vimalkumar, & Revichandran, 2008; Shah et al.,
+2019). Upwelling gives rise to a strong temperature differential between
+the nearshore and offshore, and high primary productivity and surface
+chlorophyll (BR, 2010; Chauhan et al., 2011; Habeebrehman et al., 2008;
+Shafeeque et al., 2019). Primary productivity subsides after September,
+whereas mesozooplankton abundances increase and remain high in the
+post-monsoon period (Madhupratap et al., 2001).
+
+### 
+
+### 1.3 Oil sardine life cycle and fishery interaction
+
+The Indian oil sardine fishery is restricted to the narrow strip of the
+western Indian continental shelf, \<20 km offshore (Figure 1; Rohit et
+al., 2018). The yearly cycle begins with spawning in June and July,
+corresponding to the onset of the summer monsoon (Antony Raja, 1969) and
+much lower nearshore SSTs due to upwelling (Figure 3). Mature fish
+migrate from offshore to spawning areas (Antony Raja, 1964), and
+spawning begins when temperature, salinity, and food availability are
+conducive to larval survival (Jayaprakash & Pillai, 2000; Krishnakumar
+et al., 2008; Murty & Edelman, 1966; Nair, Joseph, Kripa, Remya, &
+Pillai, 2016). After an initial peak, spawning continues into September
+(Antony Raja, 1969; Hornell, 1910; Hornell & Nayudu, 1924; Prabhu &
+Dhulkhed, 1970). Both early- and late-spawning cohorts are evident in
+the length distributions of fish in the fall catch. After spawning,
+adults migrate closer to the coast (Figure 1), where the spent fish
+become exposed to the fishery and landings begin to increase. Catches
+during summer are dominated by these 1--2.5-year-old mature fish (Antony
+Raja, 1969; Bensam, 1964; Nair et al., 2016).
+
+Spawned sardine eggs develop rapidly into larvae (Nair, 1959). The
+phytoplankton bloom that provides food for the larvae depends on
+nutrient influx from coastal upwelling and runoff from rivers during the
+summer and early fall (Shafeeque et al., 2019). Blooms start near the
+southern tip of India in June, then increase in intensity and expand
+northward with the peak of bloom intensity remaining south of
+13$^{\circ}$N, the northern end of Kerala (BR, 2010). Variation in the
+bloom initiation time and intensity leads to changes in the food supply,
+and thus in larval growth and survival and subsequent recruitment of
+0-year sardines into the fishery (George et al., 2012). Oil sardines
+grow rapidly in the first few months of life, and spikes of 0-year fish
+from early spawning appear in the August and September catches in most
+years (Antony Raja, 1970; Nair et al., 2016). During late summer and
+fall, both adult and juvenile sardines shoal and feed in the nearshore
+following the intense plankton blooms that develop off the Kerala coast.
+Oil sardines remain inshore to feed through winter and peak catches
+occur in October-December followed by January-March (Figure 4). These
+post-monsoon, October--March, catches are mixed age including fish from
+0--2 years (Antony Raja, 1970; Nair et al., 2016; Prabhu & Dhulkhed,
+1970; Rohit et al., 2018). In March--May, the sardines move offshore to
+deeper water where they are no longer available to the fishery, landings
+consequently decline (Figure 4), and the seasonal cycle begins anew.
+
+Landings are products of abundance, effort and catchability (i.e.,
+availability to the nearshore fishery). For much of the period of our
+study, the Indian oil sardine fishery was largely unregulated and has
+been a nearshore fishery dominated by small boats. For this time period,
+the yearly landings are often assumed to reflect total abundance for
+species- and fishery-specific reasons (cf. Kripa et al., 2018). The ring
+seine was introduced in this fishery in the 1980s (Das & Edwin, 2018),
+but widespread mechanization of the fleet is a recent development.
+Fishers with small boats with no refrigeration have limited ability to
+target stock, at least not to the degree that landings would remain
+constant as abundance declines, as can be seen with a large, mobile,
+highly mechanized fleet. The fishery is unregulated, except for a brief
+closure during the summer monsoon, and thus landings are not affected by
+area closures or catch limits. Finally, the fishery is dispersed along
+the entire coastline, rather than being focused from a few large ports.
+Thus, the relationship between landings and abundance can be assumed to
+be strong for our data set and comparison of the landings to the
+available catch-per-unit effort (hours fishing) data shows high
+correlation (Hamza et al., 2020). Seasonal variation in the oil sardine
+catch is affected both by movement of fish in and out of the nearshore
+(Figure 1) and recruitment of juvenile fish to the fishery.
+
+# 2 MATERIALS AND METHODS
+
+## 2.1 Sardine landing data
+
+The Central Marine Fisheries Research Institute (CMFRI), Kochi, India,
+has collected quarterly fish landing data along the country's
+southwestern coast since the early 1950s using a stratified multistage
+sampling design which accounts for the different boat and gear types
+(Srinath et al., 2005). We used CMFRI data from the Indian state of
+Kerala (Figure 1), which has the longest and most complete time series
+and where the overwhelming majority of oil sardines are landed (Figure
+4). Quarterly oil sardine landings data (in metric tons) for all gear
+types used in Kerala were obtained from CMFRI reports (1956--1984) and
+online databases (1985--2015). See the Supplemental Information: Data
+sources and raw data. These data were log transformed to stabilize
+variance and to facilitate additive modeling.
+
+## 
+
+## 2.2 Environmental data
+
+We analyzed monthly composites of SST, chlorophyll-a concentration,
+precipitation, upwelling indices derived from SST and winds, and ocean
+climate indices (Figures 2 and 5). For each covariate, specific months
+(seasons) were used corresponding to different aspects of oil sardine
+life-history and its interaction with the nearshore fishery. These are
+summarized in Table 1. See the Supporting Information: Data sources and
+raw data for all environmental data details, sources and code to compute
+metrics and download the data.
+
+We tested SST (°C) averaged between 8° and 13°N in the nearshore (within
+1° of the coast) in June-September (summer monsoon period of peak
+upwelling, spawning, larval growth and survival) and October-December
+(peak juvenile somatic growth). SST in the current year could affect
+landings by causing fish movement in and out of nearshore and/or
+affecting juvenile abundance while prior year effects would arise via
+effects on cohort strength. We tested SST regionally, between 8° and
+13°N and up to 2° off-shore, in the spring (March-May) and over the
+prior 30 months (January *t-2* to June *t*). The former may affect egg
+development, spawning and inshore migration timing thus affecting both
+current and future year abundance and availability to the fishery. The
+latter integrates effects of SST over the average sardine lifespan and
+has been shown to be correlated with recruitment in other sardine
+species (Checkley et al., 2017). For our SST source, we used the Daily
+Optimum Interpolation (OI), Version 2.1 data set by the Group for High
+Resolution Sea Surface Temperature (GHRSST). This data set uses Advanced
+Very-High Resolution Radiometer (AVHRR) data, which provides accurate
+nearshore SST values, and interpolates to fill in gaps in the AVHRR
+data. See the section on comparison of SST products in the Supplemental
+Information: Full model tests and diagnostics. We used OI SST for all
+the main analyses which use landings data after 1981. For our analysis
+of the effect of the regional- (as opposed to nearshore-) SST prior to
+1981, we used the International Comprehensive Ocean-Atmosphere Data Set
+(ICOADS) SST product, available from 1960. The nearshore (\<80km) ICOADS
+SST measurements are not as accurate as AVHRR and could not be used for
+our covariates involving nearshore SST, such as the nearshore-offshore
+SST differential.
+
+The strength of upwelling during the summer monsoon June to September
+has been widely studied for its effects on coastal productivity and
+coastal anoxia. The upwelling dynamics in our study area are unusual in
+that remote oceanographic forcing is an especially important driver of
+the seasonal upwelling intensity in combination with forces from local
+wind stress (BR, 2010; BR et al., 2008; Rao, Joshi, & Ravichandran,
+2008). We used a variety of SST- and wind-based indices that have been
+used in recent papers on upwelling dynamics off the southwest coast of
+India. We tested both current year effects which could arise via effects
+on abundance or lower catchability due to movement offshore to avoid
+nearshore anoxia and prior year effects which would arise via cohort
+strength in the prior year. The first index was the SST differential
+between nearshore and 3° longitude offshore, based on Naidu, Kumar, and
+Babu (1999) and BR et al. (2008). This index has a strong temporal
+association with chlorophyll-a blooms (Figure 3) and is able to measure
+upwelling arising due to both remote-forcing and local wind stress. SSTs
+were obtained from the AVHRR remote-sensing data set described above.
+The second index was the Ekman Mass Transport (EMT; kg m^-1^ s^-1^)
+perpendicular to and within 2° longitude of the coast (Schwing,
+O\'Farrell, Steger, & Baltz, 1996; Shafeeque et al., 2019). The third
+index was the Ekman Pumping (W~e~; m s^-1^) at the tip of India (Shah et
+al., 2018). EMT and W~e~ are computed from surface winds and capture
+upwelling due to local wind-stress. We used the Reanalysis Data ERA5
+monthly 10m winds from the European Centre for Medium-Range Weather
+Forecasts. See the Supplemental Information: Ekman Mass Transport and
+Pumping Calculations for the equations and code for computing EMT and
+W~e~ from surface winds and for a comparison of the ERA5 winds to other
+remote-sensing wind products.
+
+Precipitation over land and over the ocean during the summer monsoon
+(June to September) and spring (April to May) were tested in both the
+current and prior year. Precipitation over land leads to river
+discharge, which has various and large influences, positive and
+negative, on the nearshore ocean environment. Precipitation data were
+obtained from two sources: monthly precipitation (in millimeters) over
+Kerala, obtained with land-based rain gauges and available from the
+Indian Institute of Tropical Meteorology from 1956; and daily
+precipitation (averaged monthly) over the ocean from remote-sensing (via
+the NOAA Global Precipitation Climatology Project). From the latter, we
+extracted data for the 2.5° × 2.5° box defined by latitude 8.75--11.25°N
+and longitude 73.25--75.75°E off the Kerala coast. The land and
+nearshore ocean precipitation data are correlated (Supporting
+Information; Figure S6).
+
+Satellite-derived chlorophyll-a data are only available since September
+1997 and were not the focus of our analysis due to low sample size,
+however, were included for preliminary study. We examined current and
+prior year effects of chlorophyll-a in the summer monsoon (June to
+September) period of peak upwelling and peak blooms (Figure 3) and in
+the October to December period of peak juvenile somatic growth. For
+chlorophyll-a concentration (mg m^-3^), we used the R2018.0 and R2018.1
+products developed by the NASA Ocean Biology Processing Group of the
+Ocean Ecology Laboratory.
+
+We used four climate indices that have been found to correlate with
+either oil sardine landings, coastal anoxia, chlorophyll-a, or upwelling
+intensity in recent studies: Oceanic Niño Index (ONI), the Dipole Mode
+Index (DMI), the Pacific Decadal Oscillation (PDO) index, and the
+Atlantic Multidecadal Oscillation (AMO) index. The ONI is a measure of
+the SST anomaly in the east-central Pacific and a standard index of the
+ENSO cycle. The DMI is defined by the SST anomaly difference between the
+western and southeastern Indian Ocean and is an index for the Indian
+Ocean Dipole cycle. It has been shown to predict anoxic events in our
+study area (Vallivattathillam et al., 2017) and seasonal chlorophyll-a
+blooms in the southeastern Indian Ocean (Currie et al., 2013). The PDO
+and AMO indices are measures of the SST anomalies in the North Pacific
+and North Atlantic Oceans, respectively. Hamza et al. (2020) found
+significant correlation between PDO and AMO indices and multiyear
+fluctuations in oil sardine landings. For ONI, PDO and AMO indices, we
+created an annual covariate from the average July *t-1* to June *t*
+values. The yearly average was computed this way so that it would not
+overlap with the July-September catch that we are forecasting.
+
+## 
+
+## 2.3 Base catch models
+
+The first step in our analysis was to determine our base models for
+current catch as a function of past catch. We modeled July--September
+(late-monsoon) and October--March (post-monsoon) catches separately, for
+biological and statistical reasons. Unlike the October--March catch, the
+July--September catch contains mainly mature spawning-age fish, is
+affected by the monsoon fishery closure, and is affected by the timing
+of post-spawning movement inshore which exposes fish to the fishery. The
+covariates that affect the timing of spawning and post-spawning inshore
+movement may differ from those that affect egg, larval and juvenile
+survival, and nearshore shoaling (and thus the size of the October-March
+catch). Separating the catches into seasons, and analyzing annual
+series, eliminated the confounding influence of seasonality and
+permitted a focus on year-to-year variability rather than the seasonal
+cycle. Although adults in July-September would be those that spawn the
+0-year fish in the October-March catch, the July-September catch in year
+*t* was not used as a predictor for October-March catch in year *t*. The
+focus of our work is the study of forecasting performance; the
+July-September catch numbers would not be available by October (the
+quarter immediately after).
+
+We found little support for autoregressive errors, i.e., Autoregressive
+Integrated Moving Average (ARIMA) models with moving average (MA)
+components, based on diagnostic tests of the residuals and model
+selection. The best-supported ARIMA models were simple AR models
+($x_{t} = \alpha + bx_{t - 1} + \epsilon_{t}$) where the error-term
+$\epsilon_{t}$ was temporally independent. Similar lack of strong
+autocorrelation in residuals has been found in other studies using ARIMA
+catch models for small pelagics (Stergiou & Christou, 1996). We thus
+used AR-only models; however, we tested linear and non-linear models
+with generalized additive models (GAMs; Wood, 2017) of the form
+$x_{t} = \alpha + s\left( x_{t - 1} \right) + \epsilon_{t},$ where *s*(
+) is a non-linear spline smoothing function, and time-varying linear
+models with dynamic linear models (DLMs) of the form
+$x_{t} = \alpha_{t} + b_{t}x_{t - 1} + \epsilon_{t}$. GAMs enable
+modeling of the effect of a covariate as a flexible non-linear function,
+and DLMs allow the effect of the covariate to vary over time. Our GAM
+approach is analogous to that taken by Jacobson and MacCall (1995) in a
+study of the effects of SST on Pacific sardine recruitment.
+
+We explored four classes of base catch models: a naïve (null) model,
+linear regressive models with 1--2 years of prior catch data, DLMs
+(using the MARSS package in R; Holmes, Ward, & Wills, 2012), and GAMs
+(using the mgcv package in R; Wood, 2011). We fit GAMs with smooth terms
+represented by penalized thin-plate regression splines and fixed the
+smoothing term at an intermediate value (sp = 0.6) to obtain smooth
+responses, as multimodal or overly flexible response curves would not be
+realistic for our application. The catch models were:
+
+-   naïve (null): $ln(C_{i,t}) = ln(C_{j,t - 1}) + \epsilon_{t}$
+-   biased random walk:
+    $ln(C_{i,t}) = \alpha + ln(C_{j,t - 1}) + \epsilon_{t}$
+-   linear AR-1:
+    $ln(C_{i,t}) = \alpha + \beta ln(C_{j,t - 1}) + \epsilon_{t}$
+-   linear AR-2:
+    $ln(C_{i,t}) = \alpha + \beta_{1}ln(C_{j,t - 1}) + \beta_{2}ln(C_{k,t - 2}) + \epsilon_{t}$
+-   DLM AR-1:
+    $ln(C_{i,t}) = \alpha_{t} + \beta_{t}ln(C_{j,t - 1}) + \epsilon_{t}$
+-   GAM AR-1: $ln(C_{i,t}) = \alpha + s(ln(C_{j,t - 1})) + \epsilon_{t}$
+-   GAM AR-2:
+    $ln(C_{i,t}) = \alpha + s_{1}(ln(C_{j,t - 1})) + s_{2}(ln(C_{k,t - 2})) + \epsilon_{t},$
+
+$\ \ln\left( C_{i,t} \right),\ ln\left( C_{j,t - 1} \right),\ ln(C_{k,t - 2})$
+are the log catches. *t*, *t-1* and *t-2* denote current, prior year and
+two years prior. *i*, *j* and *k* denote the season: July-September
+(denoted *S* for late-summer) or October-March (denoted *W* for winter)
+catch depending on the model.
+
+We tested models with October--March $(W_{t - 1}$ and $W_{t - 2}$), and
+July--September ($S_{t - 1}$ and $S_{t - 2}$) catches 1 and 2 prior
+years as the explanatory catch variables (the $C_{j,t - 1}$ and
+$C_{k,t - 2}$). $S_{t}$ was not used as a predictor for $W_{t}$ because
+$\text{it}$ is the immediately preceding quarter.
+
+The catch models were fit to 1983--2015 catch data, the time-period for
+which our SST, upwelling, and precipitation data were available for all
+years; we used the same years of catch data for all covariate tests.
+Akaike information criterion corrected for small sample size (AICc) and
+leave-one-out cross-validation (LOOCV) were applied to nested sets of
+models to evaluate model support. LOOCV involves model fitting with the
+omission of a data point, followed by prediction of that data point. The
+root mean squared error (RMSE) and median absolute error (MdAE) are
+reported for the set of LOOCV prediction errors. After selection of the
+best model using the 1983--2015 data, fitting was repeated with catch
+data from 1956--1982 to confirm the base catch model. An influential
+years test was performed by removing each year in the series
+sequentially and repeating the model selection analysis (Supporting
+Information: Validation of catch base models, Figures S1-S5).
+
+## 
+
+## Covariate analysis
+
+Once the base catch models were determined, the environmental covariates
+(Section 2.2) were studied. The covariate models were selected to test
+specific hypothesized drivers of catch variability based on how and when
+environmental variables are thought to affect oil sardine survival and
+recruitment and to affect availability to the fishery (summarized in
+Table 1 and Section 2.2). As with the catch models, support was
+evaluated using AICc and LOOCV with nested sets of models. The full sets
+of nested models are shown in the appendices (Tables A1 and A2) and
+Supplement Table S7. Models with covariates (*V*) with linear and
+non-linear (GAM) effects were compared:
+$ln(C_{i,t}) = M + \alpha + \beta_{1}V_{t} + \epsilon_{t}$ and
+$ln(C_{i,t}) = M + \alpha + s(V_{t}) + \epsilon_{t}$, where $M$ is the
+best catch model from the preliminary model fitting step described
+above. The smoothing term for the GAM models was fixed at an
+intermediate value (sp = 0.6). Note, in all cases, prior catch was the
+most important variable; that is, the environmental covariates were
+never more important than prior catch in terms of explaining variance.
+
+Research has suggested that nutrient input from river discharge is
+necessary in order for upwelling to fuel high nearshore productivity
+(Shafeeque et al., 2019). To test this, models with a linear or
+non-linear upwelling-precipitation interaction were also tested:
+$\ln\left( C_{i,t} \right) = M + \alpha + \beta_{1}V_{1,t} + \beta_{2}V_{2,t} + \beta_{3}V_{1,t}V_{2,t} + \epsilon_{t}$
+and
+$\ln\left( C_{i,t} \right) = M + \alpha + s_{1}\left( V_{1,t} \right) + s_{2}\left( V_{2,t} \right) + ti\left( V_{1,t},V_{2,t} \right){\  + \ \epsilon}_{t},$
+where *ti*( ) is a tensor product interaction (non-linear interaction).
+Chlorophyll-a was not included in the main analyses since it is only
+available since September 1997. Instead, a separate analysis using
+1997-2015 data was performed using chlorophyll-a alone as a covariate.
+Lastly a DLM covariate model was used to explore models with changing
+effects of SST, AMO and precipitation:
+$ln(C_{i,t}) = {M + \alpha}_{t} + \beta_{t}V_{t} + \epsilon_{t}$.
+
+All statistical analysis was completed in the R programming language (R
+Development Core Team, 2019) using the mcgv (Wood, 2011) and MARSS
+(Holmes, Ward, & Wills, 2012) R packages.
+
+# 
+
+# 3 RESULTS
+
+## 3.1 Base catch model selection
+
+For 1983--2015 July--September catches, models with the October--March
+catch in the prior year ($ln(W_{t - 1})$) were strongly supported over
+the naïve model and over models with the prior-year July--September
+catch ($ln(S_{t - 1})$), and models with catch two-years prior
+(Tables S1 and S2). Including prior catch with a non-linear response
+improved model fit and reduced LOOCV RMSE (Table S2). Three models had
+almost identical AICc and LOOCV RMSE (maximum adjusted $R^{2} = 21.7$):
+linear and non-linear models with $ln(W_{t - 1})$, and a non-linear
+model with $ln(W_{t - 1})$ and $ln(W_{t - 2})$. Similar model selection
+results were obtained for the October--March landings (Tables S4 and
+S5), but these models explained much more variance (maximum adjusted
+$R^{2} = 57.3$). The best-supported model$,$ based on AICc and *F*
+values, was the non-linear model with $ln(W_{t - 1})$ and
+$ln(S_{t - 2})$ (Tables 2, S4 and S5). The simpler model with only
+$ln(W_{t - 1})$ had the second lowest AICc but lowest LOOCV RMSE values.
+
+Repeating the model selection using 1956--1982 data yielded the same
+results for the July--September catch, with the non-linear model with
+$ln(W_{t - 1})$ having the lowest AICc and LOOCV RMSE values (Table S3).
+For the October--March catch, the results were very similar, but not
+identical. The non-linear model with $ln(W_{t - 1})$ had the lowest
+LOOCV RMSE value, and the models with $ln(W_{t - 1})$ and
+$ln(S_{t - 2})$ or $ln(S_{t - 2})$ had the lowest AICs, although the
+difference from the AICc for the $ln(W_{t - 1})$ model was \<1 (Table
+S6). The DLMs (time-varying effects) performed poorly for the
+July--September catch, with high AICc and LOOCV RMSE values. One DLM for
+the October--March catch showed mixed performance, with a higher AICc
+but lower LOOCV RMSE value. Overall, the model selection indicated that
+a catch model with a time-varying effect of prior catch did not improve
+either model fit or out-of-sample prediction, but inclusion of a
+non-linear effect was important.
+
+We chose the non-linear model with $ln(W_{t - 1})$ as the base catch
+model for the July--September catch based on further diagnostic tests
+(Supporting Information: Validation of catch base models) and to
+minimize the loss of degrees of freedom from an additional covariate,
+$ln(W_{t - 2})$.
+
+$M0:ln(S_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$ (adj. *R*^2^ =
+21.7)
+
+Two non-linear base models were chosen for the October--March catch:
+
+$M1:ln(W_{t}) = \alpha + s_{1}(ln(W_{t - 1})) + s_{2}(ln(S_{t - 2})) + \epsilon_{t}$
+(adj. *R*^2^ = 45.9)
+
+$M2:ln(W_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$ (adj. *R*^2^ =
+57.3)
+
+Both models were included as base models for the October--March catch as
+one had the best model fit while the other had better out-of-sample
+prediction. Both were supported based on the influential years analysis
+(Supporting Information; Figures S1-S5).
+
+## 
+
+## 3.2 Environmental covariate selection
+
+The covariate analysis was able to rule out a number of the tested
+covariates. Specifically, we found no support for the use of April--May
+or June--July precipitation over the ocean, in the current or prior
+season or as a linear or non-linear effect, as an explanatory variable
+for the July--September or October--March catch (Tables A1, A2, and S7).
+We also found no support for the use of March--May (current or prior
+year) or October--December SST as an explanatory variable for the
+July--September or October--March catch (Tables A1, A2, and S7). In
+general, all the indices of upwelling in the current or prior year were
+either not or only weakly supported (based on AICc) and did not improve
+out-of-sample prediction (LOOCV RMSE or MdAE) (Tables A1, A2, and S7).
+The one exception was the July-September catch and the June-September
+nearshore SST upwelling index in the current year and Ekman Pumping in
+the prior year. These reduced the LOOCV MdAE prediction errors but did
+not reduce the LOOCV RMSE errors or AICc for the July-September catch
+(Table A1). The Ekman Mass Transport (EMT) upwelling index did not
+improve the model fit (AICc) or prediction errors (Table A1 and A2).
+Recent research (Shafeeque et al., 2019) suggests that there is an
+interaction between upwelling and precipitation, such that both
+anomalous precipitation over land and upwelling intensity during the
+summer monsoon is needed for strong chlorophyll-a blooms. Our tests
+using a variety of interaction models showed that while models with
+interactions increased the *R^2^*, the increased parameter cost led to
+higher AICc and higher out-of-sample prediction errors (Table A8). Note,
+the July-September upwelling indices overlap with the July-September
+catch and thus would not be useful for forecasting July-September catch
+but were tested to understand the utility of the upwelling indices. We
+also found no support for using the ONI or PDO index to improve either
+the July--September or October--March catch predictions. The fall DMI in
+the prior year reduced AICc and LOOCV RMSE and MdAE but only for
+October-March catch with the more complex model (Table 2 and S7).
+
+Only three covariates emerged as explanatory variables that both
+explained catch variance (lower AICc) and reduced out-of-sample
+predictions errors across models and across different time-periods: the
+June-July precipitation over land, the 2.5-year average regional SST,
+and the AMO index. The best models included non-linear response curves
+(Figure 6). For the July--September catch, the best models had an
+adjusted *R*^2^ of 29.9, 47 and 47.5 (precipitation, SST and AMO,
+respectively) versus 21.7 for the model without the covariate (Tables 2
+and A1), and for the October--March catch, the a$\text{djusted}\ R^{2}$
+was 59.6, 65.9 and 63.8 (precipitation, SST and AMO) versus 45.9 using
+the simpler base model without covariates and 70.5, 69.5 and 65.6 versus
+57.3 with the more complex base model (Tables 2, A2, and S7). These
+covariates reduced the median out-of-sample prediction error (LOOCV
+MdAE) by up to 19% for the July-September catch and the median and root
+mean-squared out-of-sample prediction errors (LOOCV RMSE and MdAE) by up
+to 22% for the October-March catch relative to the base model without
+environmental covariates (Tables 2, A1, A2, and S7). Figure 7
+illustrates the reduction in prediction errors using the 2.5-year
+average regional SST as an example (the other covariates are shown in
+Figures A1 and A2).
+
+Our examination of the chlorophyll-a covariate was limited, as the
+simplest model including the chlorophyll-a concentration required five
+degrees of freedom, and catch size varied little in the period for which
+we had chlorophyll-a data. The fitting of second-degree polynomial
+models to the average log chlorophyll-a concentrations in
+July--September and October--December of the current and prior years
+yielded no significant result for the July--September catch, but we
+found a significant effect of the prior-year October--December
+chlorophyll-a concentration on the October--March catch (Tables A1, A2
+and S7).
+
+We identified four outlier years in which October--March oil sardine
+landings were much lower than predicted based on prior catches: 1986,
+1991, 1994, and 2013 (Figure 7c). In the figure, the y-axis is the
+predicted catch in a LOOCV analysis thus is the 'left-out' year. The
+model with 2.5-year average regional SST predicted the collapses in 1986
+and 1991; the predicted catch sizes with this covariate in the model
+were much closer to the observed catches (Figure 7d). The 2.5-year
+average regional SST did not explain the 1994 collapse, the largest
+during the study period, or the 2013 collapse. The same pattern was seen
+for the July--September catch, with the exception that this catch was
+not unusually low in 1991 (Figure 7a). The 2.5-year average regional SST
+reduced the prediction errors for this catch in 1986 but did not
+(appreciably) reduce it for 1994 or 2013 (Figure 7b). In fact, no
+covariate tested in this study explained the 1994 fishery collapse
+(Figures A1 and A2); the prediction error for this year was very high
+regardless of any covariate that was included in the model.
+
+## 3.3 Dynamic linear modeling with SST, AMO and precipitation
+
+The ICOADS SST data set does not capture the nearshore SST as accurately
+as AVHRR, and thus was not used for our main analyses. Nonetheless the
+ICOADS regional SST (as opposed to nearshore) is highly correlated with
+the AVHRR regional SST data (Supporting Information; Figure S7), and the
+ICOADS SST data extend almost to the start of the catch time series (to
+1960). The precipitation data and AMO index also extend to 1960. Using
+the dynamic linear model for the October-March catch, we examined
+whether the explanatory power (as measured by model residual errors,
+i.e., model fit) of these three covariates changed over time.
+Time-varying covariate models were fit to the residuals of the simpler
+base October-March catch model; the results were very similar with the
+more complex October-March catch model thus results using only one of
+the October-March base models are shown. The covariates were z-scored
+(mean removed and variance standardized to 1) and included as
+third-order polynomials to allow a non-linear response. The models took
+the form
+$r_{t} = \beta_{1,t}V_{t} + {\beta_{2,t}V_{t}^{2} + \beta_{3,t}V_{t}^{3} + \epsilon}_{t}$
+where *r* is the catch residual and *V* is the covariate. The *β* were
+allowed to evolve as an autoregressive process,
+$\beta_{t} = \beta_{t - 1}{+ e}_{t}$, with *e~t\ ~*\~ N(0, *σ*). The *σ*
+was chosen such that the model complexity (time-variation) did not
+increase out-sample-prediction error over the base catch model (with no
+environmental covariates).
+
+The explanatory power of the covariates, even when allowed to be
+time-varying and thus flexible enough to fit temporally local
+conditions, changed over time. Up to 1990, the land precipitation did
+not increase model fit but did afterwards. The 2.5-year average regional
+SST and AMO index improved the model fit over the entire time series
+(meaning the covariate RMSE line was below that of the model with no
+covariates), but especially so from the mid-1980s to late-1990s (Figure
+8).
+
+# 
+
+# 4 DISCUSSION
+
+Our results indicate that successful modeling of Indian oil sardine
+catch depends on the catch season of interest (monsoon versus
+post-monsoon) and selection of the environmental covariate to use in the
+model. All the covariates we tested were tied to environmental
+conditions known to impact key life-stages of the oil sardine. However
+only two regional covariates, the multiyear average regional SST and the
+monsoon rainfall over land, and one ocean climate index, the Atlantic
+Multidecadal Oscillation index, improved both model fit and
+out-of-sample prediction.
+
+**4.1 Monsoon versus post-monsoon model performance**
+
+The July-September catch, which overlaps with the summer monsoon and a
+seasonal fishery closure, is difficult to model. The best July-September
+models with only prior catch as a covariate explained less than 22% of
+the variation while the best model with environmental covariates
+explained only 47% of the variation and had median out-of-sample
+prediction errors of +/-65% (of raw, not log-transformed, catch). We
+found only one covariate that improved the root mean squared
+out-of-sample prediction error for the July-September catch (the AMO
+index), though a number improved median out-of-sample prediction error.
+In contrast, variation in the post-monsoon catch (October-March) was
+much better explained. The simpler model with only prior catch as a
+covariate explained 45.9% of the variation and the model with the best
+covariate, explained 65.9%. The best environmental covariate reduced the
+out-of-sample prediction errors (RMSE and MdAE) by ca. 20% and explained
+two of the four recent catch collapses.
+
+This result cautions against modeling all quarters of oil sardine catch
+together (as one yearly catch). The July--September catch is difficult
+to model, as it exhibits high variability that is poorly explained by
+past catches or environmental factors. The reasons for this are likely a
+combination of variable spawning timing which affects the timing of
+movement of adults into the nearshore where they are exposed to the
+fishery, the summer monsoon which affects fishing operations, and the
+fishery closure during part of this period. In contrast, the
+October--March catch, which comprises 60-80% of the catch from July to
+June, is much better explained, and its forecasts have smaller
+predictive errors. Forecasting all quarters together as a yearly catch
+means that the high variability in the July-September catch will hide
+the predictability of the subsequent October-March catch.
+
+**4.2 Sea surface temperature**
+
+The SST in October--December, the period of larval and early juvenile
+development, may affect survival and growth in multiple ways and thus
+correlate with biomass in future years. In some years, extreme heat
+events occur in March--May during the period of egg maturation which may
+affect spawning and thus the current year and future biomass. However,
+we found no correlation of these seasonal SST covariates with the
+July--September or October-March catch in the current or future years.
+
+Instead, we found that the regional SST averaged over the prior 2.5
+years (January *t-2* to June *t*), corresponding to the lifespan of an
+oil sardine, emerged as a consistently informative SST covariate. The
+multiyear average regional SST explained variability in the oil sardine
+landings and improved out-of-sample catch prediction. Studies conducted
+in the California Current System have also found that the multiyear
+average SST explains year-to-year variability in Pacific sardine
+recruitment (Checkley, Alheit, Oozeki, & Roy, 2009; Checkley et al.,
+2017; Jacobson & MacCall, 1995; Lindegren & Checkley, 2013). This
+covariate has also been found to correlate with southern African sardine
+recruitment (Boyer, Boyer, Fossen, & Kreiner, 2001). McClatchie,
+Goericke, Auad, and Hill (2010) found no relationship between SST and
+Pacific sardine recruitment; however, they examined this relationship
+linearly; in the present study, as in the other cited studies, allowance
+of non-linearity in the SST effect was important. Both Jacobson and
+MacCall (1995) and Lindegren and Checkley (2013) found a step-like
+response function for temperature: below a threshold value the effect of
+temperature was linear (and positive) and above the threshold, the
+effect was flat (no longer increased). In the linear portion of the
+effect curve, the point where the effect curve crosses from negative to
+positive represents an important biological threshold. Our analysis
+found a similar effect curve with a negative effect when the 2.5-year
+average regional SST was below ${28.37}^{\circ}$C and positive above and
+with the positive effect leveling off above ${28.5}^{\circ}$C.
+
+The AMO index (July *t-1* to June *t* average) is highly correlated with
+the 2.5-year average regional SST covariate used in our analyses
+(Pearson correlation ρ=0.70 1983-2016), unlike the other ocean climate
+indices: ONI ρ=0.16, PDO index ρ=-0.04 and DMI ρ=0.37 (Supporting
+Information; Figure S8). Thus, not surprisingly, the AMO index also
+emerged as a consistently informative covariate and provided reductions
+in out-of-sample prediction error similar to the multiyear average SST.
+None of the other ocean climate indices were informative, except the DMI
+but only in the most complex October-March catch model. Teleconnection
+between the AMO and the Indian Ocean has been shown in a number of
+papers (reviewed in Hu, Hu & Hu, 2018; Zhang et al., 2019). In
+particular, there appears to be a relationship between the intensity of
+the Indian summer monsoon and the AMO (Lu, Dong & Ding, 2006; Zhang &
+Delworth, 2006). The correlation between oil sardine landings and the
+AMO index that we (and Hamza et al., 2020) found is likely a reflection
+of this large-scale teleconnection that manifests, in part, as
+correlation between regional SST and the AMO index.
+
+**4.3 Precipitation**
+
+Since early studies of oil sardines, precipitation during the summer
+monsoon has been studied as a variable to explain catch fluctuations
+(Antony Raja, 1969, 1974; Murty & Edelman, 1966; Srinath, 1998). While
+correlations have been found, the identified correlations between
+precipitation and oil sardine landings have been positive in some
+studies and negative in others (Madhupratap et al., 1994) and varied
+depending on the time period studied. In general, the correlation was
+assumed to be positive as rainfall is correlated with monsoon intensity
+which is in turn correlated with upwelling and productivity. But heavy
+monsoon rain also has negative effects. During heavy rainfall, nutrient
+and sediments flow into the nearshore region from rivers, which leads to
+short-term eutrophication and anoxia in coastal waters (Chauhan et al.,
+2011).
+
+In our study, we compared rainfall over the ocean (using remote-sensing
+data) and over the land (using land-gauge data). Though correlated,
+these are not identical. We found no correlation between rainfall over
+the ocean and catch in any combination of our statistical tests. Oceanic
+rainfall was uniformly disinformative---increasing both AICc and
+out-of-sample prediction errors---across all combinations of models
+tested. In contrast the June-July precipitation over land in the current
+season was strongly informative and was the only covariate besides the
+multiyear average regional SST and AMO index that improved model fit and
+out-of-sample prediction. The effect of precipitation was non-linear;
+close to zero for low to moderate rainfall levels and then negative at
+high precipitation. This suggests that the negative effect of high
+rainfall was the dominant impact. The effects were only seen on the
+current year catch and thus may reflect a temporary movement of fish
+offshore (away from the fishery) to avoid anoxia rather than a lower
+cohort strength that would persist into the next season.
+
+**4.4 Upwelling**
+
+Despite the strong connections of upwelling with productivity which
+positively impacts sardine recruitment, growth, and survival, none of
+the upwelling indices examined in this study (SST-nearshore-offshore
+differential, Ekman Mass Transport, and Ekman Pumping) explained
+year-to-year variation in current-year or prior-year landings or
+improved out-of-sample forecasts. When we did find a (weak) relationship
+with upwelling intensity and catch, the effect was for the current year
+only and was negative, rather than positive. The negative effect emerged
+at extremely high upwelling. This negative effect is not surprising.
+Extremely high upwelling transports larval sardines offshore and brings
+to the surface poorly oxygenated water which sardines avoid (Gupta et
+al., 2016).
+
+Our tests looked at whether upwelling intensity explained variation and
+future catch beyond what could be explained using a catch model with
+only prior catch as the covariate. It may be that upwelling affects the
+future abundance in a way that is already captured by using prior catch.
+Conversely it may be that strong upwelling by itself is not sufficient
+for productivity. Shafeeque et al. (2019) looked at the correlation
+between summer upwelling strength and precipitation and chlorophyll-a
+bloom intensity. They found that chlorophyll-a bloom anomalies were
+associated with years with both upwelling and precipitation anomalies,
+suggesting an interaction between these two environmental variables.
+While we found that models with an upwelling and precipitation
+interaction did have higher *R^2^* relative to an upwelling-only or
+precipitation-only model, they had higher, sometimes considerably
+higher, out-of-sample prediction errors than the base catch model with
+no covariates or the base catch model with only precipitation. This
+highlights one of the dilemmas of forecasting: increased complexity in a
+model often brings a high prediction cost.
+
+The monthly average upwelling metrics we used are those used in many
+other studies of upwelling and nearshore productivity in this region. In
+most coastal upwelling systems, local wind-stress forces are the most
+important driver of upwelling, however the southwest coast of India is
+unique in that remote-forcing and local currents and gyres play an
+unusually important role in driving the seasonal upwelling intensity
+(BR, 2010; BR et al., 2008; Rao et al., 2008; Shah et al., 2019). Our
+nearshore-offshore SST differential index should have captured upwelling
+intensity due to either wind stress or remote-forcing, and we expected
+that it would perform better than the wind-based metrics. However, it
+was equally uninformative as a covariate. It may be that other aspects
+of upwelling besides average nearshore intensity, such as the timing of
+its initiation (e.g., Barth et al., 2007), its spatial extent along the
+coast or some metric of daily extreme events are necessary to capture
+the conditions relevant to oil sardine landings. We did find support for
+a more direct measure of productivity and food availability: the
+nearshore surface chlorophyll-a concentration. Chlorophyll-a
+concentration in fall, the period of peak juvenile somatic growth,
+explained the October-March catch in the next year, reducing
+out-of-sample prediction errors by 10% to 20%. With chlorophyll-a data
+only available after 1997, the power of our tests was limited, but this
+suggests that fall chlorophyll-a concentration, after the summer peak
+chlorophyll-a blooms, may prove useful for improving forecasts.
+
+**4.5 Oil sardine collapses**
+
+There were four years when October-March oil sardine landings were much
+lower than expected based on prior catches: 1986, 1991, 1994 and 2013.
+The 2.5-year average regional SST was able to explain the collapses in
+1986 and 1991. The largest collapse was in 1994, when the catch was much
+lower than expected even taking into account the prior year declines.
+The most recent collapse, in our data set, was 2013. The 2.5-year
+average regional SST did not successfully predict the 1994 or 2013
+collapses; although the prediction error was reduced for both years, it
+was still large. The same pattern was seen for the July-September catch,
+with the exception that 1991 was not unusually low. The 2.5-year average
+regional SST reduced the prediction error for 1986 but did not
+(appreciably) for 1994 nor 2013. In fact, none of the covariates we
+tested explained the lower than expected 1994 catch; while only the
+precipitation over land in June-July explained the 2013 collapse (but
+not 1994, 1991, nor 1986). The 1994 collapse was correlated with severe
+nearshore anoxia (Kripa et al., 2015). Since none of the environmental
+factors we studied captured the 1994 decline, it suggests that metrics
+that more directly measure nearshore anoxia may be necessary.
+
+# 5 CONCLUSIONS
+
+Our study emphasizes a number of key points for developing models for
+the purpose of landings forecasting. First, improvements in catch
+forecasts beyond what is possible using prior catch (a null
+autoregressive catch model) may be elusive. All the environmental
+covariates that we tested are closely tied to factors that affect
+critical months of spawning, growth, survival and movement of sardines
+into the nearshore (where they are exposed to the fishery). Yet almost
+none of these explained catch variability, beyond what could be
+explained using a simple autoregressive catch model. Second, non-linear
+effects are common and important to consider. Third, covariate effects
+can change over time. Fisheries exist within complex multi-species
+ecological systems and species and their life histories evolve. Forecast
+models will need to guard against covariate effects that change over
+time and lead to an erosion of forecast performance. Lastly, model
+complexity comes at a price particularly when the goal is prediction.
+Inclusion of out-of-sample prediction metrics is crucial as these can
+give a very different picture compared to metrics for model fit alone.
+Covariates that are supported by model fit, even using model selection
+metrics that penalize extra complexity, may still be uninformative or
+even disinformative for out-of-sample prediction.
+
+Despite all this, we found that there were environmental covariates that
+did appreciably improve landings prediction. In particular, the
+multiyear average sea surface temperature has now emerged as an
+informative covariate across multiple studies on sardine species, and
+interestingly, the Atlantic Multidecadal Oscillation index---recently
+shown to be correlated to oil sardines landings by Hamza et al.
+(2020)---was also an informative covariate in our analysis. This
+suggests that the Indian oil sardine is affected by global-scale
+processes, in particular the teleconnection between the AMO and Indian
+Ocean processes (reviewed in Hu, Hu & Hu, 2018; Zhang et al., 2019). We
+see a number of fruitful directions to explore to further improve
+short-term forecasts. The first is incorporation of direct leading
+indicators of catch. We did not show models with catch in the prior
+quarter as a predictor; surveys take time to process and report and thus
+data for the immediately prior quarter would not be available. Had we
+included the prior quarter catch, the fits and predictions would be much
+better. However, models could use preliminary catch numbers from the
+beginning of the prior quarter from sentinel landing centers or gear
+types. This would be feasible without a new data collection scheme and
+would certainly improve the short-term forecasts for the next quarter. A
+longer-term approach would be incorporation of recruitment information
+from egg or larval density surveys. Such surveys have been conducted on
+the U.S. West coast since the 1940s by the California Cooperative
+Oceanic Fisheries Investigations (CalCOFI) Program (Gallo et al., 2019),
+and these data have been successfully used to improve abundance
+estimation and management of the Pacific sardine (McClatchie, 2014).
+Leading abundance indicators, such as from preliminary catch data or
+larval surveys, are likely to be especially important if climate changes
+alter past relationships of catch with the environmental covariates.
+
+The temperature of the Western Indian Ocean has been increasing over the
+last century at a greater rate than in any other tropical ocean (Roxy,
+Ritika, Terray, & Masson, 2014), and warming has been most extreme
+during the summer monsoon months. These changes are affecting the oil
+sardine distribution, with significant landings now occurring north of
+Goa (Vivekanandan, Rajagopalan, & Pillai, 2009). Continued warming is
+expected to affect the productivity of the region via multiple pathways,
+including changes in salinity, oxygen concentration, currents, wind
+patterns, ocean stratification, and upwelling spatial patterns,
+phenology, and intensity (Moustahfid, Marsac, & Grangopadhyay, 2018).
+The incorporation of environmental covariates into landings forecasts
+has the potential to improve fishery management for small pelagic
+species, such as oil sardines, in the face of a changing ocean
+environment (Haltuch et al., 2019; Tommasi et al., 2016). However,
+careful performance testing of the environmental covariates will be
+needed and expectations as to how much environmental covariates can
+improve forecasts should be tempered, especially if there are
+multi-month lags in the landings data available to include in the
+forecast or if new sources of abundance indicators, such as recruitment
+surveys, remain unavailable.
+
+# CONFLICT OF INTEREST
+
+The authors have no conflicts of interest to declare.
+
+# DATA AVAILABILITY STATEMENT
+
+The raw data that supports the findings of this study are available in
+the data table in the supplementary material of this article. The data
+were derived from the following resources available in the public
+domain. SST, chlorophyll-a concentration, and ocean currents: NOAA
+ERDDAP data server https://coastwatch.pfeg.noaa.gov/erddap. Ocean winds
+from the ERA5 Global Reanalysis: Asia-Pacific Data Research Center
+ERDDAP data server http://apdrc.soest.hawaii.edu/erddap. Ocean
+precipitation: NOAA/NCEI Global Precipitation Climatology Project
+https://www.ncei.noaa.gov. Land precipitation: Open Government Data
+Platform India https://data.gov.in. ONI: U.S. National Weather Service
+Climate Prediction Center https://www.cpc.ncep.noaa.gov. DMI: Japan
+Agency for Marine-Earth Science and Technology http://www.jamstec.go.jp.
+PDO and AMO: U.S. NOAA Physical Sciences Laboratory
+https://psl.noaa.gov/. Landings data: Reports and databases published by
+the Central Marine Fisheries Research Institute http://www.cmfri.org.in.
+
+# REFERENCES {#references-1}
+
+Alheit, J., & Hagen, E. (1997). Long-term climate forcing of European
+herring and sardine populations. *Fisheries Oceanography*, *6*(2),
+130--139.
+[https://doi.org/10.1046/j.1365-2419.1997.00035.x](https://doi.org/https://doi.org/10.1046/j.1365-2419.1997.00035.x)
+
+Alheit, J., Pohlmann, T., Casini, M., Greve, W., Hinrichs, R., Mathis,
+M., ... Wagner, C. (2012). Climate variability drives anchovies and
+sardines into the North and Baltic Seas. *Progress in Oceanography*,
+*96*(1), 128--139. https://doi.org/10.1016/j.pocean.2011.11.015
+
+Alheit, J., Gröger, J., Licandro, P., McQuinn, I. H., Pohlmann, T., &
+Tsikliras, A. C. (2019). What happened in the mid-1990s? The coupled
+ocean-atmosphere processes behind climate-induced ecosystem changes in
+the Northeast Atlantic and the Mediterranean. *Deep Sea Research Part
+II: Topical Studies in Oceanography*. 159, 130--142.
+https://doi.org/10.1016/j.dsr2.2018.11.011
+
+Annigeri, G. G. (1969). Fishery and biology of the oil sardine at
+Karwar. *Indian Journal of Fisheries*, *16*(1/2), 35--50.
+
+Antony Raja, B. T. (1964). Some aspects of spawning biology of Indian
+oil sardine *Sardinella longiceps* Valenciennes. *Indian Journal of
+Fisheries*, *11*(1), 45--120.
+
+Antony Raja, B. T. (1969). Indian oil sardine. *CMFRI Bulletin*, *16*,
+1--142.
+
+Antony Raja, B. T. (1970). Estimation of age and growth of the Indian
+oil sardine, *Sardinella longiceps* Val. *Indian Journal of Fisheries*,
+*17*(1/2), 26--42.
+
+Antony Raja, B. T. (1974). Possible explanation for the fluctuation in
+abundance of the Indian oil sardine, *Sardinella longiceps*
+Valenciennes. *Proceedings of the Indo-Pacific Fisheries Council*,
+*15*(3), 241--252.
+
+Bakun, A., Roy, C., & Lluch-Cota, S. (2008). Coastal upwelling and other
+processes regulating ecosystem productivity and fish production in the
+western Indian Ocean. In K. Sherman, E. N. Okemwa, & M. J. Ntiba (Eds.),
+*Large marine ecosystems of the Indian Ocean: Assessment, sustainability
+and management* (pp. 103--141). Londres: Blackwell.
+
+Barth, J. A., Menge, B. A., Lubchenco, J., Chan, F., Bane, J. M.,
+Kirincich, A. R., McManus, M. A., Nielsen, K. J., Pierce, S. D., &
+Washburn, L. (2007). Delayed upwelling alters nearshore coastal ocean
+ecosystems in the northern California Current. *Proceedings of the
+National Academy of Sciences* *104*(10), 3719--3724.
+https://doi.org/10.1073/pnas.0700462104
+
+Bensam, P. (1964). Growth variations in the Indian oil sardine,
+*Sardinella longiceps* Valenciennes. *Indian Journal of Fisheries*, *11
+A*(2), 699--708.
+
+Boyer, D. C., Boyer, H. J., Fossen, I., & Kreiner, A. (2001). Changes in
+abundance of the northern Benguela sardine stock during the decade 1990
+to 2000 with comments on the relative importance of fishing and the
+environment. *South African Journal of Marine Science*, *23*(1), 67--84.
+[https://doi.org/10.2989/025776101784528854](https://doi.org/https://doi.org/10.2989/025776101784528854)
+
+BR, S. (2010). *Coastal upwelling of the south eastern Arabian Sea ---
+an integrated approach*. Kerala, India: PhD Thesis. Physical
+Oceanography. Cochin University of Science and Technology.
+
+BR, S., Sanjeevan, V. N., Vimalkumar, K. G., & Revichandran, C. (2008).
+On the upwelling of the southern tip and along the west coast of India.
+*Journal of Coastal Research*, *24*(sp3), 95--102.
+[https://doi.org/10.2112/06-0779.1](https://doi.org/https://doi.org/10.2112/06-0779.1%20)
+
+Chauhan, O. S., Raghavan, B. R., Singh, K., Rajawat, A. S., Kader, U., &
+Nayak, S. (2011). Influence of orographically enhanced SW monsoon flux
+on coastal processes along the SE Arabian Sea. *Journal of Geophysical
+Research. Oceans*, *116*(12), C12037.
+[https://doi.org/10.1029/2011JC007454](https://doi.org/https://doi.org/10.1029/2011JC007454)
+
+Checkley, D. M., Jr., Alheit, J., Oozeki, Y., & Roy, C. (2009). *Climate
+change and small pelagic fish*. Cambridge: Cambridge University Press.
+
+Checkley, D. M., Jr., Asch, R. G., & Rykaczewski, R. R. (2017). Climate,
+anchovy, and sardine. *Annual Review of Marine Science*, *9*, 469--493.
+[https://doi.org/10.1146/annurev-marine-122414-033819](https://doi.org/https://doi.org/10.1146/annurev-marine-122414-033819)
+
+Cohen, Y., & Stone, N. (1987). Multivariate time series analysis of the
+Canadian fisheries system in Lake Superior. *Canadian Journal of
+Fisheries and Aquatic Sciences*, *44*(S2), 171--181.
+[https://doi.org/10.1139/f87-321](https://doi.org/https://doi.org/10.1139/f87-321)
+
+Currie, J., Lengaigne, M., Vialard, J., Kaplan, D. M., Aumont, O.,
+Naqvi, S. W. A., & Maury, O. (2013). Indian Ocean Dipole and El
+Niño/Southern Oscillation impacts on regional chlorophyll anomalies in
+the Indian Ocean. *Biogeosciences 10*(10), 6677-6698.
+https://doi.org/10.5194/bg-10-6677-2013
+
+Cury, P., Bakun, A., Crawford, R. J. M., Jarre, A., Quinones, R. A.,
+Shannon, L. J., & Verheye, H. M. (2000). Small pelagics in upwelling
+systems: Patterns of interaction and structural changes in "wasp-waist"
+ecosystems. *ICES Journal of Marine Science*, *57*(3), 603--618.
+[https://doi.org/10.1006/jmsc.2000.0712](https://doi.org/https://doi.org/10.1006/jmsc.2000.0712)
+
+Das, P. H. D., & Edwin, L. (2018). Temporal changes in the ring seine
+fishery of Kerala, India. *Indian Journal of Fisheries*, *65*(1),
+47--54.
+[https://doi.org/10.21077/ijf.2018.65.1.69105-08](https://doi.org/https://doi.org/10.21077/ijf.2018.65.1.69105-08)
+
+Farmer, N. A., & Froeschke, J. T. (2015). Forecasting for recreational
+fisheries management: What's the catch? *North American Journal of
+Fisheries Management*, *35*(4), 720--735.
+https://doi.org/10.1080/02755947.2015.1044628
+
+Gallo, N. D., Drenkard, E., Thompson, A. R., Weber, E. D.,
+Wilson-Vandenberg, D., McClatchie, S., Koslow, J. A., & Semmens, B. X.
+(2019). Bridging from monitoring to solutions-based thinking: lessons
+from CalCOFI for understanding and adapting to marine climate change
+impacts. *Frontiers in Marine Science,* *6,* Article 695.
+https://doi.org/10.3389/fmars.2019.00695
+
+Garza-Gil, M. D., Varela-Lafuente, M., Caballero-Míguez, G., &
+Torralba-Cano, J. (2015). A study on economic impact on the European
+sardine fishery due to continued global warming. In B. R. Singh (Ed.),
+*Global warming: Causes, impacts and remedies* (pp. 115--136).
+https://doi.org/10.5772/58877
+
+Georgakarakos, S., Doutsoubas, D., & Valavanis, V. (2006). Time series
+analysis and forecasting techniques applied on loliginid and
+ommastrephid landings in Greek waters. *Fisheries Research*, *78*(1),
+55--71.
+[https://doi.org/10.1016/j.fishres.2005.12.003](https://doi.org/https://doi.org/10.1016/j.fishres.2005.12.003)
+
+George, G., Meenakumari, B., Raman, M., Kumar, S., Vethamony, P., Babu,
+M. T., & Verlecar, X. (2012). Remotely sensed chlorophyll: A putative
+trophic link for explaining variability in Indian oil sardine stocks.
+*Journal of Coastal Research*, *28*(1A), 105--113.
+[https://doi.org/10.2112/JCOASTRES-D-10-00070.1](https://doi.org/https://doi.org/10.2112/JCOASTRES-D-10-00070.1)
+
+Gupta, G. V. M., Sudheesh, V., Sudharma, K. V., Saravanane, N., Dhanya,
+V., Dhanya, K. R., ... Naqvi, S. W. A. (2016). Evolution to decay of
+upwelling and associated biogeochemistry over the southeastern Arabian
+Sea shelf. *Journal of Geophysical Research: Biogeosciences*, *121*(1),
+159--175.
+[https://doi.org/10.1002/2015JG003163](https://doi.org/https://doi.org/10.1002/2015JG003163)
+
+Habeebrehman, H., Prabhakaran, M. P., Jacob, J., Sabu, P., Jayalakshmi,
+K. J., Achuthankutty, C. T., & Revichandran, C. (2008). Variability in
+biological responses influenced by upwelling events in the eastern
+Arabian Sea. *Journal of Marine Systems*, *74*(1-2), 545--560.
+[https://doi.org/10.1016/j.jmarsys.2008.04.002](https://doi.org/https://doi.org/10.1016/j.jmarsys.2008.04.002)
+
+Haltuch, M. A., Brooks, E. N., Brodziak, J., Devine, J. A., Johnson, K.
+F., Klibansky, N., ... Wells, B. K. (2019). Unraveling the recruitment
+problem: A review of environmentally-informed forecasting and management
+strategy evaluation. *Fisheries Research*, *217*, 198--216.
+https://doi.org/10.1016/j.fishres.2018.12.016
+
+Hamza, F., Valsala, V., Mallissery, A., & George, G. (2020). Climate
+impacts on the landings of Indian oil sardine over the south-eastern
+Arabian Sea. *Fish and Fisheries, 22*(1), 175-193*.*
+https://doi.org/10.1111/faf.12513
+
+Hanson, P. J., Vaughan, D. S., & Narayan, S. (2006). Forecasting annual
+harvests of Atlantic and Gulf menhaden. *North American Journal of
+Fisheries Management*, *26*(3), 753--764.
+[https://doi.org/10.1577/M04-096.1](https://doi.org/https://doi.org/10.1577/M04-096.1)
+
+Holmes, E. E., Ward, E. J., & Wills, K. (2012). MARSS: Multivariate
+autoregressive state-space models for analyzing time-series data. *R
+Journal*, *4*(1), 11--19.
+[https://doi.org/10.32614/RJ-2012-002](https://doi.org/https://doi.org/10.32614/RJ-2012-002)
+
+Hornell, J. (1910). Report on the results of a fishery cruise along the
+Malabar coast and to the Laccadive Islands in 1908. *Madras Fishery
+Bulletin*, *4*(4), 76--126.
+
+Hornell, J., & Nayudu, M. R. (1924). A contribution to the life history
+of the Indian sardine with notes on the plankton of the Malabar coast.
+*Madras Fishery Bulletin*, *17*(5), 129--197.
+
+Jacobson, L. D., & MacCall, A. D. (1995). Stock-recruitment models for
+Pacific sardine (*Sardinops sagax*). *Canadian Journal of Fisheries and
+Aquatic Sciences*, *52*(3), 566--577.
+[https://doi.org/10.1139/f95-057](https://doi.org/https://doi.org/10.1139/f95-057)
+
+Jayaprakash, A. A. (2002). Long term trends in rainfall, sea level and
+solar periodicity: A case study for forecast of Malabar sole and oil
+sardine fishery. *Journal of the Marine Biological Association of
+India*, *44*(1/2), 163--175.
+
+Jayaprakash, A. A., & Pillai, N. G. K. (2000). The Indian oil sardine.
+In V. N. Pillai & N. G. Menon (Eds.), *Marine fisheries research and
+management* (pp. 259--281). Kerala, India: Central Marine Fisheries
+Research Institute.
+
+Kripa, V., Prema, D., Jeyabaskaran, R., Khambadkar, L. R., Nandakumar,
+A., Anilkumar, P. S., et al. (2015). Inter-annual variations of selected
+oceanographic parameters and its relation to fishery of small pelagics
+off Kochi, southwest coast of India. *Journal of the Marine Biological
+Association of India*, *57*, 52--57.
+https://doi.org/10.3389/fmars.2018.00443
+
+Kripa, V., Mohamed, K. S., Koya, K. P. S., Jeyabaskaran, R., Prema, D.,
+Padua, S., ... Vishnu, P. G. (2018). Overfishing and climate drives
+changes in biology and recruitment of the Indian oil sardine *Sardinella
+longiceps* in southeastern Arabian Sea. *Frontiers in Marine Science*,
+*5*, Article 443.
+[https://doi.org/10.3389/fmars.2018.00443](https://doi.org/https://doi.org/10.3389/fmars.2018.00443)
+
+Krishnakumar, P. K., Mohamed, K. S., Asokan, P. K., Sathianandan, T. V.,
+Zacharia, P. U., Abdurahiman, K. P., ... Durgekar, N. R. (2008). How
+environmental parameters influenced fluctuations in oil sardine and
+mackerel fishery during 1926-2005 along the south-west coast of India?
+*Marine Fisheries Information Service, Technical and Extension Series*,
+*198*, 1--5.
+
+Lawer, E. A. (2016). Empirical modeling of annual fishery landings.
+*Natural Resources*, *7*(3), 193--204.
+[http://dx.doi.org/10.4236/nr.2016.74018](https://doi.org/http://dx.doi.org/10.4236/nr.2016.74018)
+
+Lindegren, M., & Checkley, D. M., Jr. (2013). Temperature dependence of
+Pacific sardine (*Sardinops sagax*) recruitment in the California
+Current Ecosystem revisited and revised. *Canadian Journal of Fisheries
+and Aquatic Sciences*, *70*(2), 245--252.
+[https://doi.org/10.1139/cjfas-2012-0211](https://doi.org/https://doi.org/10.1139/cjfas-2012-0211)
+
+Lindegren, M., Checkley, D. M., Jr., Rouyer, T., MacCall, A. D., &
+Stenseth, N. C. (2013). Climate, fishing, and fluctuations of sardine
+and anchovy in the California Current. *Proceedings of the National
+Academy of Sciences*, *110*(33), 13672--13677.
+[https://doi.org/10.1073/pnas.1305733110](https://doi.org/https://doi.org/10.1073/pnas.1305733110)
+
+Lloret, J., Lleonart, J., & Sole, I. (2000). Time series modelling of
+landings in Northwest Mediterranean Sea. *ICES Journal of Marine
+Science*, *57*(1), 171--184.
+[https://doi.org/10.1006/jmsc.2000.0570](https://doi.org/https://doi.org/10.1006/jmsc.2000.0570)
+
+Longhurst, A. R., & Wooster, W. S. (1990). Abundance of oil sardine
+(*Sardinella longiceps*) and upwelling on the southwest coast of India.
+*Canadian Journal of Fisheries and Aquatic Sciences*, *47*(12),
+2407--2419.
+[https://doi.org/10.1139/f90-268](https://doi.org/https://doi.org/10.1139/f90-268)
+
+Lu, R., Dong, B., and Ding, H. (2006), Impact of the Atlantic
+Multidecadal Oscillation on the Asian summer monsoon. *Geophysical
+Research Letters*, *33*(24), L24701.
+https://doi.org/10.1029/2006GL027655.
+
+Madhupratap, M., Gopalakrishnan, T. C., Haridas, P., & Nair, K. K. C.
+(2001). Mesozooplankton biomass, composition and distribution in the
+Arabian Sea during the fall intermonsoon: Implications of oxygen
+gradients. *Deep Sea Research Part II: Topical Studies in Oceanography*,
+*48*(6), 1345--1368.
+[https://doi.org/10.1016/S0967-0645(00)00142-9](https://doi.org/https://doi.org/10.1016/S0967-0645(00)00142-9)
+
+Madhupratap, M., Shetye, S. R., Nair, K. N. V., & Nair, S. R. S. (1994).
+Oil sardine and Indian mackerel: Their fishery, problems and coastal
+oceanography. *Current Science*, *66*(5), 340--348.
+[https://doi.org/10.1029/2004GL019652](https://doi.org/https://doi.org/10.1029/2004GL019652)
+
+Manjusha, U., Jayasankar, J., Remya, R., Ambrose, T. V., & Vivekanandan,
+E. (2013). Influence of coastal upwelling on the fishery of small
+pelagics off Kerala, south-west coast of India. *Indian Journal of
+Fisheries, 60(2)*, 37-42.
+
+McClatchie, S. (2014). *Regional fisheries oceanography of the
+California Current System. The CalCOFI Program*. New York, NY: Springer.
+https://doi.org/ 10.1007/978-94-007-7223-6
+
+McClatchie, S., Goericke, R., Auad, G., & Hill, K. (2010). Re-assessment
+of the stock--recruit and temperature--recruit relationships for Pacific
+sardine (*Sardinops sagax*). *Canadian Journal of Fisheries and Aquatic
+Sciences*, *67*(11), 1782--1790.
+[https://doi.org/10.1139/F10-101](https://doi.org/https://doi.org/10.1139/F10-101)
+
+Mendelssohn, R. (1981). Using Box-Jenkins models to forecast fishery
+dynamics: Identification, estimation and checking. *Fishery Bulletin*,
+*78*(4), 887--896.
+
+Menon, N. N., Sankar, S., Smitha, A., George, G., Shalin, S.,
+Sathyendranath, S., & Platt, T. (2019). Satellite chlorophyll
+concentration as an aid to understanding the dynamics of Indian oil
+sardine in the southeastern Arabian Sea. *Marine Ecology Progress
+Series*, *617-618*, 137--147.
+[https://doi.org/10.3354/meps12806](https://doi.org/https://doi.org/10.3354/meps12806)
+
+Moustahfid, H., Marsac, F., & Grangopadhyay, A. (2018). Climate change
+impacts, vulnerabilities and adaptations: Western Indian Ocean marine
+fisheries. In M. Barange, T. Bahri, M. C. M. Beveridge, K. L. Cochrane,
+S. Funge-Smith, & F. Poulain (Eds.), *Impacts of climate change on
+fisheries and aquaculture: Synthesis of current knowledge, adaptation
+and mitigation options* (pp. 251--280). Rome: FAO Fisheries; Aquaculture
+Technical Paper No. 627.
+
+Murty, A. V. S., & Edelman, M. S. (1966). On the relation between the
+intensity of the south-west monsoon and the oil-sardine fishery of
+India. *Indian Journal of Fisheries*, *13*(1/2), 142--149.
+
+Naidu, P. D., Kumar, M. R. R., & Babu, V. R. (1999). Time and space
+variations of monsoonal upwelling along the west and east coasts of
+India. *Continental Shelf Research*, *19*(4), 559--572.
+[https://doi.org/10.1016/S0278-4343(98)00104-6](https://doi.org/https://doi.org/10.1016/S0278-4343(98)00104-6)
+
+Nair, P. G., Joseph, S., Kripa, V., Remya, R., & Pillai, V. N. (2016).
+Growth and maturity of Indian oil sardine *Sardinella longiceps*
+(Valenciennes, 1847) along southwest coast of India. *Journal of Marine
+Biological Association of India*, *58*(1), 64--68.
+[https://doi.org/10.6024/jmbai.2016.58.1.1899-07](https://doi.org/https://doi.org/10.6024/jmbai.2016.58.1.1899-07)
+
+Nair, R. V. (1952). Studies on the revival of the Indian oil sardine
+fishery. *Proceedings of Indo-Pacific Fisheries Council*, *2*, 1--15.
+
+Nair, R. V. (1959). Notes on the spawning habits and early life-history
+of the oil sardine, *Sardinella longiceps* Cuv. & Val. *Indian Journal
+of Fisheries*, *6*(2), 342--359.
+
+Nair, R. V., & Subrahmanyan, R. (1955). The diatom, *Fragilaria
+oceanica* Cleve, an indicator of abundance of the Indian oil sardine,
+*Sardinella longiceps* Cuv. and Val. *Current Science*, *24*(2), 41--42.
+
+Nobel, A., & Sathianandan, T. V. (1991). Trend analysis in all-India
+mackerel catches using ARIMA models. *Indian Journal of Fisheries*,
+*38*(2), 119--122.
+
+Pillai, V. N. (1991). Salinity and thermal characteristics of the
+coastal waters off southwest coast of India and their relation to major
+pelagic fisheries of the region. *Journal of the Marine Biological
+Association of India*, *33*(1/2), 115--133.
+
+Piontkovski, S., Al Oufi, H., & Al Jufaily, S. (2014). Seasonal and
+interannual changes of Indian oil sardine, *Sardinella longiceps*,
+landings in the governorate of Muscat (the Sea of Oman). *Marine
+Fisheries Review*, *76*(3), 50--59.
+[https://dx.doi.org/10.7755/MFR.76.3.3](https://doi.org/https://dx.doi.org/10.7755/MFR.76.3.3)
+
+Pitchaikani, J. S., & Lipton, A. P. (2012). Impact of environmental
+variables on pelagic fish landings: Special emphasis on Indian oil
+sardine off Tiruchendur coast, Gulf of Mannar. *Journal of Oceanography
+and Marine Science*, *3*(3), 56--67.
+[https://doi.org/10.5897/JOMS](https://doi.org/https://doi.org/10.5897/JOMS)
+
+Prabhu, M. S., & Dhulkhed, M. H. (1970). The oil sardine fishery in the
+Mangalore zone during the seasons 1963-64 and 1967-68. *Indian Journal
+of Fisheries*, *17*(1/2), 57--75.
+
+Prista, N., Diawara, N., Costa, M. J., & Jones, C. (2011). Use of SARIMA
+models to assess data-poor fisheries: A case study with a sciaenid
+fishery off Portugal. *Fisheries Bulletin*, *109*(2), 170--185.
+[https://doi.org/10.7755/FB](https://doi.org/https://doi.org/10.7755/FB)
+
+Rao, A.D., Joshi, M. & Ravichandran, M. (2008). Oceanic upwelling and
+downwelling processes in waters off the west coast of India. *Ocean
+Dynamics,* *58*(3/4), 213--226.
+https://doi.org/10.1007/s10236-008-0147-4
+
+Rohit, P., Sivadas, M., Abdussamad, E. M., Rethinam, A. M. M., Koya, K.
+P. S., Ganga, U., ... Supraba, V. (2018). *Enigmatic Indian oil sardine:
+An insight*. CMFRI Special Publication No. 130. p156. ICAR-Central
+Marine Fisheries Research Institute.
+
+Roxy, M. K., Ritika, K., Terray, P., & Masson, S. (2014). The curious
+case of Indian Ocean warming. *Journal of Climate*, *27*(22),
+8501--8509.
+[https://doi.org/10.1175/JCLI-D-14-00471.1](https://doi.org/https://doi.org/10.1175/JCLI-D-14-00471.1)
+
+Rykaczewski, R. R., & Checkley, D. M., Jr. (2008). Influence of ocean
+winds of the pelagic ecosystem in upwelling regions. *Proceedings of the
+National Academy of Science*, *105*(6), 1965--1970.
+[https://doi.org/10.1073/pnas.0711777105](https://doi.org/https://doi.org/10.1073/pnas.0711777105)
+
+Sajna, V. H., Zacharia, P. U., Liya, V. B., Rojith, G., Somy, K.,
+Joseph, D., & Grinson, G. (2019) Effect of climatic variability on the
+fishery of Indian oil sardine along Kerala coast. *Journal of Coastal
+Research, 86(sp1),* 184-192*.* https://doi.org/10.2112/SI86-028.1
+
+Schaaf, W. E., Sykes, J. E., & Chapoton, R. B. (1975). Forecasts of
+Atlantic and Gulf menhaden catches based on the historical relation of
+catch and fishing effort. *Marine Fisheries Review*, *37*(10), 5--9.
+[https://doi.org/10.7755/MFR](https://doi.org/https://doi.org/10.7755/MFR)
+
+Schwartzlose, R. A., Alheit, J., Bakun, A., Baumgartner, T. R., Cloete,
+R., Crawford, R. J. M., ... Zuzunaga, J. Z. (2010). Worldwide
+large-scale fluctuations of sardine and anchovy populations. *South
+African Journal of Marine Science*, *21*(1), 289--347.
+[https://doi.org/10.2989/025776199784125962](https://doi.org/https://doi.org/10.2989/025776199784125962)
+
+Schwing, F. B., O\'Farrell, M., Steger, J., & Baltz, K. (1996). Coastal
+upwelling indices, west coast of North America 1946-1995, NOAA Technical
+Memorandum NMFS-SWFSC-231.
+
+Shafeeque, M., Shah, P., Platt, T., Sathyendranath, S., Menon, N. N.,
+Balchand, A. N., & George, G. (2019). Effect of precipitation on
+chlorophyll-a in an upwelling dominated region along the West coast of
+India. *Journal of Coastal Research, 86(sp1),* 218-224.
+https://doi.org/10.2112/SI86-032.1
+
+Shah, P., Sajeev, R., Thara, K. J., George, G., Shafeeque, M., Akash,
+S., & Platt, T. (2019). A holistic approach to upwelling and downwelling
+along the South-West coast of India. *Marine Geodesy, 42(1)*, 64-84.
+https://doi.org/10.1080/01490419.2018.1553805
+
+Srinath, M. (1998). Exploratory analysis on the predictability of oil
+sardine landings in Kerala. *Indian Journal of Fisheries*, *45*(4),
+363--374.
+
+Srinath, M., Kuriakose, S., & Mini, K. G. (2005). Methodology for
+estimation of marine fish landings in India. In *CMFRI Special
+Publications No. 86. p57.* Central Marine Fisheries Research Institute.
+
+Stergiou, K. I., & Christou, E. D. (1996). Modeling and forecasting
+annual fisheries catches: Comparison of regression, univariate and
+multivariate time series methods. *Fisheries Research*, *25*(2),
+105--138.
+[https://doi.org/10.1016/0165-7836(95)00389-4](https://doi.org/https://doi.org/10.1016/0165-7836(95)00389-4)
+
+Supraba, V., Dineshbabu, A. P., Thomas, S., Rohit, P., Rajesh, K. M., &
+Zacharia, P. U. (2016). Climate influence on oil sardine and Indian
+mackerel in southeastern Arabian Sea. *International Journal of
+Development Research*, *6*(8), 9152--9159.
+
+Thara, K. J. (2011). *Response of eastern Arabian Sea to extreme
+climatic events with special reference to selected pelagic fishes*.
+Kerala, India: PhD Thesis. Department of Physical Oceanography. Cochin
+University of Science and Technology.
+
+Tommasi, D., Stock, C. A., Pegion, K., Vecchi, G. A., Methot, R. D.,
+Alexander, M. A., & Checkley, D. M., Jr. (2016). Improved management of
+small pelagic fisheries through seasonal climate prediction. *Ecological
+Applications*, *27*(2), 378--388.
+[https://doi.org/10.1002/eap.1458](https://doi.org/https://doi.org/10.1002/eap.1458)
+
+Vallivattathillam, P., Iyyappan, S., Lengaigne, M., Ethé, C., Vialard,
+J., Levy, M., ... Naqvi, W. (2017). Positive Indian Ocean Dipole events
+prevent anoxia off the west coast of India. *Biogeosciences*, *14*(6),
+1541--1559.
+[https://doi.org/10.5194/bg-14-1541-2017](https://doi.org/https://doi.org/10.5194/bg-14-1541-2017)
+
+Venugopalan, R., & Srinath, M. (1998). Modelling and forecasting fish
+catches: Comparison of regression, univariate and multivariate time
+series methods. *Indian Journal of Fisheries*, *45*(3), 227--237.
+
+Vivekanandan, E., Rajagopalan, M., & Pillai, N. G. K. (2009). Recent
+trends in sea surface temperature and its impact on oil sardine. In P.
+K. Aggarwal (Ed.), *Global climate change and Indian agriculture* (pp.
+89--92). New Delhi: Indian Council of Agricultural Research.
+
+Vivekanandan, E., Srinath, M., Pillai, V. N., Immanuel, S., & Kurup, K.
+N. (2003). Marine fisheries along the southwest coast of India. In G.
+Silvestre, L. Garces, I. Stobutzki, C. Luna, M. Ahmad, R. A.
+Valmonte-Santos, ... D. Pauly (Eds.), *Assessment, management, and
+future directions for coastal fisheries in Asian countries* (pp.
+759--792). WorldFish Center, Penang.: WorldFish Center Conference
+Proceedings 67.
+
+Ward, E. J., Holmes, E. E., Thorson, J. T., & Collen, B. (2014).
+Complexity is costly: a meta-analysis of parametric and non-parametric
+methods for short-term population forecasting. *Oikos, 123(6)*. 652-661.
+https://doi.org/10.1111/j.1600-0706.2014.00916.x
+
+Wood, S. N. (2011). Fast stable restricted maximum likelihood and
+marginal likelihood estimation of semiparametric generalized linear
+models. *Journal of the Royal Statistical Society B*, *73*(1), 3--36.
+[https://doi.org/10.1111/j.1467-9868.2010.00749.x](https://doi.org/https://doi.org/10.1111/j.1467-9868.2010.00749.x)
+
+Wood, S. N. (2017). *Generalized additive models: An introduction with
+R*. Boca Raton, FL: CRC Press. https://doi.org/10.1201/9781315370279
+
+Xu, C., & Boyce, M. S. (2009). Oil sardine (*Sardinella longiceps*) off
+the Malabar coast: Density dependence and environmental effects.
+*Fisheries Oceanography*, *18*(5), 359--370.
+[https://doi.org/10.1111/j.1365-2419.2009.00518.x](https://doi.org/https://doi.org/10.1111/j.1365-2419.2009.00518.x)
+
+Zhang, R., & Delworth, T. L. (2006). Impact of Atlantic multidecadal
+oscillations on India/Sahel rainfall and Atlantic hurricanes.
+*Geophysical Research Letters*, *33*(17), L17712.
+https://doi.org/10.1029/2006GL026267
+
+Zhang, R., Sutton, R., Danabasoglu, G., Kwon, Y.‐O., Marsh, R., Yeager,
+S. G., Amrhein, D. E, & Little, C. M. (2019). A review of the role of
+the Atlantic Meridional Overturning Circulation in Atlantic Multidecadal
+Variability and associated climate impacts. *Reviews of Geophysics*,
+*57*(2), 316--375. https://doi.org/10.1029/2019RG000644
+
+# FIGURE LEGENDS
+
+**FIGURE 1** The study area, located off the southwestern coast of
+India. Kerala is shaded gray.
+
+**FIGURE 2** Seasonal average winds, sea surface temperature (SST) and
+currents during the summer monsoon versus the winter non-monsoon months
+in the study area. Winds and SST are from the Reanalysis Data ERA5
+monthly product and averaged over 1979-2020. The bottom panels show the
+main seasonal currents near the study area: the West India Coastal
+Current going north in winter and south in summer and the Summer Monsoon
+Current going west to east near 8°N.
+
+**FIGURE 3** Key oil sardine life history events (top colored bars),
+overlaid on the monthly nearshore and offshore sea surface temperatures
+(SSTs; °C) and nearshore chlorophyll-a (Chl-a) concentrations (mg
+m^-3^).
+
+**FIGURE 4** Top panel: Quarterly catch data for 1956--2015 from Kerala.
+Note that the fishery is closed July 1--mid-August, meaning that the
+quarter 3 catch represents only 1.5 months. Mean catches in quarters
+1--4 were 38, 19.2, 30.9, and 59.9 metric tons, respectively. Bottom
+panel: The seasonal time series (July-September and October-March catch)
+used in the paper.
+
+**FIGURE 5** Four of the remote sensing covariates used in the analysis.
+All data are monthly averages. The upwelling index was defined as the
+difference between the nearshore and 3° longitude offshore sea surface
+temperatures (SSTs). Surface chlorophyll-a data are available only from
+September 1997 onward. SSTs were obtained from Advanced Very High
+Resolution Radiometer (AVHRR) products which provide high resolution
+nearshore measurements.
+
+**FIGURE 6** Effect sizes for the 2.5-year average regional sea surface
+temperature (SST; within 2° of the Kerala coast), current-season
+upwelling intensity (average June-September SST nearshore-offshore
+upwelling index off Kochi, Kerala), current season June-July
+precipitation over land and the Atlantic Multidecadal Oscillation (AMO)
+index in the prior year on July--September and October--March catches.
+As the upwelling index reflects the difference between offshore and
+nearshore SST, positive values indicate that coastal surface waters are
+colder than offshore waters. The more positive the difference, the
+stronger the upwelling intensity.
+
+**FIGURE 7** Predicted versus observed catches obtained with models with
+and without the 2.5-year average sea surface temperature (SST) included
+as a non-linear covariate. The lines indicate a perfect prediction where
+observed catch equals the predicted catch. The value to be predicted was
+left out in the model fitting. Values above the line are cases where the
+prediction was too high and values below the line are cases where the
+prediction was too low. a) July--September catch, modeled with only the
+prior-season October--March catch as a covariate. b) July--September
+catch, modeled with the prior-season October--March catch and 2.5-year
+average SST as covariates. c) October--March catch, modeled with the
+prior-season October--March catch only. d) October--March, modeled as in
+panel c with the addition of the 2.5-year average SST. LOOCV RMSE =
+leave one out root mean squared prediction error. See Figures A1 and A2
+for the same plots with other environmental covariates.
+
+**FIGURE 8** Model fit over 10-year windows for dynamic linear models of
+October-March catch 1960-2015 using the 2.5-year average SST from the
+ICOADS data set, June-July precipitation over land (from land gauges),
+and Atlantic Multidecadal Oscillation index as covariates. These models
+allowed the covariate model to evolve over time. The models were fit to
+the residuals of the simpler base model (with only prior October-March
+catch as a covariate) with the 1994 residual was removed. The covariates
+were z-scored (mean removed and standardized to variance of 1) and
+included as a third-order polynomial to allow a non-linear effect. The
+plot shows the RMSE of the model residuals computed on a 10-year sliding
+window.
+
+**TABLE 1** Covariate models for the July--September (*S~t~*) and
+October--March (*W~t~*) landings. In the model (left) column, the first
+line is the environmental covariate. The response variable and the
+mechanism by which the covariate is postulated to affect catch is shown
+below the covariate (see Notes for the codes). The tests did not impose
+a direction (positive or negative) and some environmental covariates
+have been hypothesized to have both positive and negative impacts on oil
+sardines.
+
++----------------------------------+----------------------------------+
+| > **Model**                      | > **Description and              |
+|                                  | > justification**                |
++----------------------------------+----------------------------------+
+| Jun--Jul and Apr-Mar ocean       | > Precipitation over the ocean   |
+| precipitation                    | > may directly or indirectly     |
+|                                  | > prompt spawning, after which   |
+| AF: *S~t~*                       | > spent adults migrate inshore   |
+|                                  | > and are exposed to the         |
+|                                  | > nearshore fishery.             |
++----------------------------------+----------------------------------+
+| Jun--Jul land precipitation      | > Summer monsoon precipitation   |
+|                                  | > over land leads to high        |
+| AF: *S~t~*                       | > nutrient input from river      |
+|                                  | > discharge. At high levels,     |
+| GS: *W~t~, W~t+1~, S~t+1~*       | > this leads to eutrophication   |
+|                                  | > and anoxia, which drives       |
+|                                  | > adults off-shore away from the |
+|                                  | > fishery. At moderate levels,   |
+|                                  | > this supports nearshore        |
+|                                  | > productivity.                  |
++----------------------------------+----------------------------------+
+| Apr--Mar ocean precipitation     | > Spring precipitation is an     |
+|                                  | > indicator of climatic          |
+| SS: *W~t~, W~t+1~, S~t+1~*       | > conditions during egg          |
+|                                  | > development, which aﬀect       |
+|                                  | > spawning success and thus the  |
+|                                  | > cohort strength.               |
++----------------------------------+----------------------------------+
+| Jun--Sep upwelling               | > Upwelling drives phytoplankton |
+|                                  | > blooms which bring fish closer |
+| AF: *S~t~*                       | > to the coast (and the fishery) |
+|                                  | > and which promote larval and   |
+| GS+AF: *W~t~*                    | > juvenile growth and survival.  |
+|                                  | > However extreme upwelling      |
+| GS: *W~t~, W~t+1~, S~t+1~*       | > advects phytoplankton biomass  |
+|                                  | > offshore and brings hypoxic    |
+|                                  | > water to the surface.          |
++----------------------------------+----------------------------------+
+| Mar--May r-SST                   | > Extreme pre-monsoon heating    |
+|                                  | > events drive mature fish from  |
+| AF: *S~t~*                       | > spawning areas, resulting in   |
+|                                  | > poor recruitment and fewer     |
+| *SS: W~t~, W~t+1~, S~t+1~*       | > 0-year fish.                   |
++----------------------------------+----------------------------------+
+| Oct--Dec ns-SST                  | > October-December are the peak  |
+|                                  | > somatic growth months, and     |
+| GS: *W~t~, W~t+1~, S~t+1~*       | > larval and juvenile growth and |
+|                                  | > survival are aﬀected by        |
+|                                  | > temperature in the nearshore   |
+|                                  | > feeding area.                  |
++----------------------------------+----------------------------------+
+| Jul-Sep and Oct-Dec CHL          | > Surface chlorophyll-a          |
+|                                  | > concentration is a proxy for   |
+| AF: *S~t~*                       | > phytoplankton abundance. Peak  |
+|                                  | > chlorophyll-a concentration is |
+| GS+AF: *W~t~*                    | > in July-September while        |
+|                                  | > October-December are critical  |
+| GS: *W~t+1~, S~t+1~*             | > months for juvenile growth and |
+|                                  | > survival.                      |
++----------------------------------+----------------------------------+
+| 2.5-year average r-SST           | > Spawning, early survival, and  |
+|                                  | > recruitment depend on many     |
+| IA: *S~t~, W~t~, W~t+1~, S~t+1~* | > cascading factors summarized   |
+|                                  | > by the average regional SST    |
+|                                  | > over the lifespan of an oil    |
+|                                  | > sardine.                       |
++----------------------------------+----------------------------------+
+| ONI, PDO, AMO                    | > The large-scale ocean climate  |
+|                                  | > has impacts on precipitation,  |
+| IA: *S~t~, W~t~, W~t+1~, S~t+1~* | > SST, wind, currents and        |
+|                                  | > upwelling patterns in the      |
+|                                  | > south-western Indian Ocean.    |
+|                                  | > These in turn have cascading   |
+|                                  | > impacts on spawning, early     |
+|                                  | > survival and abundance.        |
++----------------------------------+----------------------------------+
+| Sep-Nov DMI                      | > Negative DMI values in         |
+|                                  | > September--November are        |
+| GS+AF: *W~t~*                    | > associated with anoxic events  |
+|                                  | > along the Kerala coast which   |
+| GS: *W~t~, W~t+1~, S~t+1~*       | > drive fish offshore and reduce |
+|                                  | > juvenile growth and survival.  |
++----------------------------------+----------------------------------+
+| *Notes.* Model codes: AF,        |                                  |
+| availability to the nearshore    |                                  |
+| fishery (movement inshore        |                                  |
+| increases availability while     |                                  |
+| movement offshore reduces        |                                  |
+| availability); SS, spawning      |                                  |
+| success; GS, growth and          |                                  |
+| survival; IA, integrated         |                                  |
+| abundance. Environmental         |                                  |
+| covariates codes: r-SST,         |                                  |
+| regional (0-160km) sea surface   |                                  |
+| temperature; ns-SST, nearshore   |                                  |
+| (0-80km) sea surface             |                                  |
+| temperature; CHL, chlorophyll-a  |                                  |
+| surface concentration; ONI,      |                                  |
+| Oceanic Niño Index; DMI, Dipole  |                                  |
+| Mode Index; PDO, Pacific Decadal |                                  |
+| Oscillation index; AMO, Atlantic |                                  |
+| Multidecadal Oscillation index.  |                                  |
++----------------------------------+----------------------------------+
+|                                  |                                  |
++----------------------------------+----------------------------------+
+
+**TABLE 2** Best-performing GAM models for the July--September ($S_{t})$
+and October--March ($W_{t}$) catches. M is the base models with only
+prior catch as covariates. To the base models, the environmental
+covariates are added. Nearshore SST is 0-80km from the coast and
+regional SST is 0-160km. The full set of nested covariate models with
+all tested environmental variables are given in Tables A1, A2 and Table
+S7.
+
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Model                                                                                                                      Res. df   Adj. R^2^   RMSE   AICc                     LOOCV                              LOOCV
+                                                                                                                                                                                                                      
+                                                                                                                                                                                   RMSE                               MdAE
+  -------------------------------------------------------------------------------------------------------------------------- --------- ----------- ------ ------------------------ ---------------------------------- ----------------------------------
+  **July-Sept catch 1983-2015**                                                                                                                                                                                        
+
+  null model: $ln(S_{t}) = ln(S_{t - 1}) + \epsilon_{t}$                                                                     33                    1.60   126.6                    1.60                               0.56
+
+  M0: $ln(S_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$                                                                 30        21.7        1.20   115.2                    1.31                               0.69
+
+  covariate model: $ln(S_{t})$ = M0 + $s(V)$                                                                                                                                                                          
+
+  $V$ = Jun-Sep nearshore SST *t*                                                                                            27.4      32.5        1.07   115.2                    1.31                               0.62$\ddagger \ddagger$
+
+  $V$ = Jun-Jul precipitation over land *t*                                                                                  28        29.9        1.10   115.3                    1.33                               0.62$\ddagger \ddagger$
+
+  $V$ = 2.5-year ave. regional SST *t*                                                                                       28.1      47          0.96   105.7$\dagger \dagger$   1.38                               0.56$\ddagger \ddagger$
+
+  $V$ = AMO ave. Jul-Jun *t*                                                                                                 27.5      47.5        0.94   106.6$\dagger \dagger$   1.22$\ddagger$                     0.56$\ddagger \ddagger$
+
+                                                                                                                                                                                                                       
+
+  **October-March catch - simpler model 1983-2014**                                                                                                                                                                   
+
+  null model: $ln(W_{t}) = ln(W_{t - 1}) + \epsilon_{t}$                                                                     32                    1.00   92.9                     1.00                               0.26
+
+  M1: $ln(W_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$                                                                 29.1      45.9        0.82   87.7                     0.96                               0.32
+
+  covariate model: $ln(W_{t})$ = M1 + $s(V)$                                                                                                                                                                          
+
+  $V$ = Jun-Jul precipitation over land *t*                                                                                  26.9      59.6        0.69   82.1$\dagger \dagger$    0.91$\ddagger$                     0.25$\ddagger \ddagger \ddagger$
+
+  $V$ = 2.5-year ave. regional SST *t*                                                                                       27.1      65.9        0.63   76.4$\dagger \dagger$    0.77$\ddagger \ddagger$            0.41
+
+  $V$ = Sep-Nov DMI *t-1*                                                                                                    26        44.4        0.79   94.3                     0.95                               0.34
+
+  $V$= AMO ave. Jul-Jun *t*                                                                                                  26.6      63.8        0.64   79.4$\dagger \dagger$    0.81$\ddagger \ddagger$            0.38
+
+                                                                                                                                                                                                                       
+
+  **October-March catch - more complex model 1983-2014**                                                                                                                                                              
+
+  M2: $\ln\left( W_{t} \right) = \alpha + s\left( \ln\left( W_{t - 1} \right) \right) + \ s(ln(S_{t - 2})) + \epsilon_{t}$   26.6      57.3        0.70   84.6                     1.06                               0.34
+
+  covariate model: $ln(W_{t})$ = M2 + $s(V)$                                                                                                                                                                          
+
+  $V$ = Jun-Jul precipitation over land *t*                                                                                  24.6      70.5        0.56   77.5$\dagger \dagger$    0.96$\ddagger$                     0.29$\ddagger \ddagger$
+
+  $\text{V\ }$= 2.5-year ave. regional SST *t*                                                                               24.8      69.5        0.57   78.1$\dagger \dagger$    0.82$\ddagger \ddagger \ddagger$   0.35
+
+  $V$ = Sep-Nov DMI *t-1*                                                                                                    23.8      69.1        0.56   81.1$\dagger$            0.87$\ddagger \ddagger$            0.34
+
+  $\text{V\ }$= AMO ave. Jul-Jun *t*                                                                                         24.3      65.6        0.60   83.1                     0.91$\ddagger \ddagger$            0.29$\ddagger \ddagger$
+
+                                                                                                                                                                                                                       
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Notes: LOOCV = Leave one out cross-validation. RMSE = root mean square
+error. MdAE = median absolute error. AICc = Akaike Information Criterion
+corrected for small sample size. $\dagger$ and $\dagger \dagger$ = AICc
+greater than 2 and greater than 5 below base catch model (M).
+$\ddagger$, $\ddagger \ddagger$, and $\ddagger \ddagger \ddagger$ =
+LOOCV RMSE and MdAE 5%, 10% and 20% below model M, respectively. $t$
+indicates the covariate from the current year while t-1 indicates from
+the prior year. For covariates that are multiyear, $t$ is the last
+calendar year (i.e., the 2014 multiyear average regional SST is January
+2012 to June 2014). The equations with s() are GAM models where the
+covariates has a non-linear response (defined by a spline based
+smoothing function). The full set of nested tests for the base catch
+models (no environmental covariates) are given in the Supporting
+Information, Tables S1-S6.

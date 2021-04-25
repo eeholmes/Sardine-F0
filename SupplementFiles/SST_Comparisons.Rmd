@@ -1,0 +1,211 @@
+---
+title: "Comparison of SST Products"
+author: "EE Holmes"
+date: "11/9/2020"
+output: html_document
+---
+
+```{r setupsst, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+source(file.path(here::here(), "SupplementFiles", "get_EMT_functions.R"))
+load(file.path(here::here(), "SupplementFiles", "indiashp.RData"))
+```
+
+# Load R libraries
+
+```{r sstlibraries}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(raster)
+library(rasterVis)
+```
+
+# Get the data
+
+Get SST from the  Daily Optimum Interpolation (OI), AVHRR Only, Version 2. This is on a 0.25 degree grid. The data are from  https://coastwatch.pfeg.noaa.gov/erddap/info/ncdcOisst2Agg/index.html.
+
+```{r iosstdata}
+dates <- c("2010-01-01", "2011-01-01")
+lats <- c(7, 15); lons <- c(70,78)
+sst1 <- getdata("ncdcOisst2Agg", date=dates, lat=lats, lon=lons, pars="sst", 
+                altitude=0, alt.name="zlev")
+sst1$date <- format(sst1$time, "%Y-%m-%d")
+sst1$month <- format(sst1$time, "%m")
+sst1$year <- format(sst1$time, "%Y")
+sst1.mon <- sst1 %>% group_by(year, month, latitude, longitude) %>% 
+  summarize(sst = mean(sst, na.rm=TRUE))
+sst1.mon$date <- paste0(sst1.mon$year, "-", sst1.mon$month, "-", "01")
+```
+
+Now get monthly SST from AVHRR. This is the night and day monthly averages on a 0.0417° grid. https://coastwatch.pfeg.noaa.gov/erddap/info/erdPH2sstamday/index.html.
+
+```{r sst2data}
+sst2 <- getdata("erdPH2sstamday", date=dates, lat=rev(lats), lon=lons, pars="sea_surface_temperature")
+sst2$date <- format(sst2$time, "%Y-%m-%d")
+sst2$month <- format(sst2$time, "%m")
+sst2$year <- format(sst2$time, "%Y")
+sst2$lon1 <- NA
+sst2$lat1 <- NA
+lats1 <- sort(unique(sst1$latitude))
+lons1 <- sort(unique(sst1$longitude))
+for(i in lats1){
+  sst2$lat1[sst2$latitude > i-0.25 & sst2$latitude < i+0.25] <- i
+}
+for(i in lons1){
+  sst2$lon1[sst2$longitude > i-0.25 & sst2$longitude < i+0.25] <- i
+}
+sst2.mon <- sst2 %>% group_by(year, month, lat1, lon1) %>% 
+  summarize(sst = mean(sea_surface_temperature, na.rm=TRUE))
+sst2.mon$date <- paste0(sst2.mon$year, "-", sst2.mon$month, "-", "01")
+colnames(sst2.mon) <- colnames(sst1.mon)
+```
+
+
+Now get the Reanalysis Data ERA5 monthly sst from http://apdrc.soest.hawaii.edu/erddap/info/hawaii_soest_d124_2bb9_c935/index.html
+
+```{r era5sstdata}
+sst3 <- getdata("hawaii_soest_d124_2bb9_c935", date=dates, lat=lats, lon=lons, 
+                    pars="sst", eserver="http://apdrc.soest.hawaii.edu/erddap")
+sst3$date <- format(sst3$time, "%Y-%m-%d")
+sst3$month <- format(sst3$time, "%m")
+sst3$year <- format(sst3$time, "%Y")
+sst3$sst <- sst3$sst-273.15
+sst3$latitude <- sst3$latitude - 0.125
+sst3$longitude <- sst3$longitude - 0.125
+sst3.mon <- sst3 %>% group_by(year, month, latitude, longitude) %>% 
+  summarize(sst = mean(sst, na.rm=TRUE))
+sst3.mon$date <- paste0(sst3.mon$year, "-", sst3.mon$month, "-", "01")
+```
+
+## Compare SST on specific dates
+
+We can see this especially for certain months such as April 2010.
+
+```{r sstraster1, echo=FALSE}
+thedate <- "2010-07-01"
+rdf <- subset(sst1.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst1 <- rasterFromXYZ(rdf); names(rst1) <- "ioSST"
+rdf <- subset(sst2.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst2 <- rasterFromXYZ(rdf); names(rst2) <- "AVHRR"
+rdf <- subset(sst3.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst3 <- rasterFromXYZ(rdf); names(rst3) <- "ERA5"
+rst3 <- setExtent(rst3, extent(rst2))
+rst <- stack(rst1, rst2, rst3)
+proj4string(rst) <- "+proj=longlat +datum=WGS84"
+spplot(rst, main=thedate) + layer(sp.polygons(indiashp2, fill="white"))
+```
+
+```{r sstraster2, echo=FALSE}
+thedate <- "2010-09-01"
+rdf <- subset(sst1.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst1 <- rasterFromXYZ(rdf); names(rst1) <- "ioSST"
+rdf <- subset(sst2.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst2 <- rasterFromXYZ(rdf); names(rst2) <- "AVHRR"
+rdf <- subset(sst3.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst3 <- rasterFromXYZ(rdf); names(rst3) <- "ERA5"
+rst3 <- setExtent(rst3, extent(rst2))
+rst <- stack(rst1, rst2, rst3)
+proj4string(rst) <- "+proj=longlat +datum=WGS84"
+spplot(rst, main=thedate) + layer(sp.polygons(indiashp2, fill="white"))
+```
+
+```{r sstraster3, echo=FALSE}
+thedate <- "2010-04-01"
+rdf <- subset(sst1.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst1 <- rasterFromXYZ(rdf); names(rst1) <- "ioSST"
+rdf <- subset(sst2.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst2 <- rasterFromXYZ(rdf); names(rst2) <- "AVHRR"
+rdf <- subset(sst3.mon, date==thedate)
+rdf$x <- rdf$longitude
+rdf$y <- rdf$latitude
+rdf <- rdf[, c("x", "y", "sst")]
+rst3 <- rasterFromXYZ(rdf); names(rst3) <- "ERA5"
+rst3 <- setExtent(rst3, extent(rst2))
+rst <- stack(rst1, rst2, rst3)
+proj4string(rst) <- "+proj=longlat +datum=WGS84"
+spplot(rst, main=thedate) + layer(sp.polygons(indiashp2, fill="white"))
+```
+
+
+
+## SST along one longitude line
+
+Create the data frame.
+
+```{r sstalonglondf}
+cols <- c("date", "latitude", "longitude", "sst")
+df <- rbind(data.frame(sst1.mon[,cols], data="ioSST"),
+            data.frame(sst2.mon[,cols], data="AVHRR"),
+            data.frame(sst3.mon[,cols], data="ERA5"))
+dfl <- df %>%
+  pivot_longer(!date & !latitude & !longitude & !data,
+                     names_to = "name",
+                     values_to = "value")
+```
+
+The SST from AVHRR can be quite different from ioSST and ERA5, e.g. Sept 2010. Here the SST along one longitude line is shown for a specific day.
+
+```{r sstalonglonplot}
+thedate <- "2010-07-01"
+plotlons <- c(72.625)
+dfl$month=format(as.Date(dfl$date), "%m")
+dfl$year=format(as.Date(dfl$date), "%Y")
+pars <- c("sst")
+ggplot(subset(dfl, longitude==plotlons[1] & name%in%pars & year==2010), 
+       aes(x=latitude, y=value, color=data)) + geom_line() +
+  facet_wrap(~month, scales="free") + 
+  ggtitle(paste("longitude =", plotlons[1]))
+```
+
+## Pairwise comparison by month
+
+```{r pairwisesstdf}
+dfl2 <- dfl %>% pivot_wider(names_from=data, values_from="value")
+dfl2$month <- format(as.Date(dfl2$date), "%m")
+ggplot(dfl2, aes(x=AVHRR, y=ioSST)) + geom_point() + geom_abline(col="red") +
+  facet_wrap(~month, scales="free") + ggtitle("ioSST versus AVHRR 2010 by month")
+```
+
+```{r avhrrvsera5plot}
+dfl2 <- dfl %>% pivot_wider(names_from=data, values_from="value")
+dfl2$month <- format(as.Date(dfl2$date), "%m")
+ggplot(dfl2, aes(x=AVHRR, y=ERA5)) + geom_point() + geom_abline(col="red") +
+  facet_wrap(~month, scales="free") + ggtitle("ERA5 versus AVHRR 2010 by month")
+```
+
+
+```{r ioSSTvsera5plot}
+dfl2 <- dfl %>% pivot_wider(names_from=data, values_from="value")
+dfl2$month <- format(as.Date(dfl2$date), "%m")
+ggplot(dfl2, aes(x=ioSST, y=ERA5)) + geom_point() + geom_abline(col="red") +
+  facet_wrap(~month, scales="free") + ggtitle("ERA5 versus ioSST 2010 by month")
+```
+
+# Conclusion
+
+The ioSST and ERA5 products are similar (linear relationship) though biased for some months. The ioSST product was chosen since it uses only AVHRR data and would be similar to previous analyses of remote-sensing SST in the region.

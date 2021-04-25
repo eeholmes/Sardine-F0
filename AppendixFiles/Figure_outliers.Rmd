@@ -1,0 +1,252 @@
+---
+title: "Outliers"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+header-includes: \usepackage[labelformat=empty]{caption}
+---
+
+```{r child = file.path(here::here(),'setup.Rmd')}
+```
+
+```{r}
+  pre <- "A"
+  figset <- "figapp:"
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results='hide', message=FALSE)
+thecap=paste0("")
+fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp1"), pre=pre))
+```
+
+
+```{r outliers-fig2, echo=FALSE,fig.cap=fullcap, fig.width=8,fig.height=8, message=FALSE, warning=FALSE}
+# loocv rmse comparison
+jig=.3 #keep of the legend
+oldpar=par(mfrow=c(2,2), mar=c(4,6,1,0))
+tcex=0.85
+dat=dat.spawners
+cov0 <- "Precip.Kerala.mon6to7.0"
+covtit0 <- "with land precipitation Jun-Jul"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2016)
+years = c(1986, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(spawners0 ~ s(nspawners1, sp=0.6), data=dat)
+m1 = gam(spawners0 ~ s(nspawners1, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Jul-Sep catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","b", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.spawners
+cov0 <- "AMO.mon7to6.0"
+covtit0 <- "with AMO Jul-Jun"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2016)
+years = c(1986, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(spawners0 ~ s(nspawners1, sp=0.6), data=dat)
+m1 = gam(spawners0 ~ s(nspawners1, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Jul-Sep catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","b", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.nonspawners
+cov0 <- "Precip.Kerala.mon6to7.0"
+covtit0 <- "with land precipitation Jun-Jul"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2015)
+years = c(1986, 1991, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6), data=dat)
+m1 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Oct-Mar catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","d", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.nonspawners
+cov0 <- "AMO.mon7to6.0"
+covtit0 <- "with AMO Jul-Jun"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2015)
+years = c(1986, 1991, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6), data=dat)
+m1 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Oct-Mar catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","d", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+par(oldpar)
+```
+
+```{r, results="asis", echo=FALSE}
+cat("\\clearpage")
+```
+
+```{r}
+fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp2"), pre=pre))
+```
+
+```{r outliers-fig3, echo=FALSE,fig.cap=fullcap, fig.width=8,fig.height=8, message=FALSE, warning=FALSE}
+# loocv rmse comparison
+jig=.3 #keep of the legend
+oldpar=par(mfrow=c(2,2), mar=c(4,6,1,0))
+tcex=0.85
+dat=dat.spawners
+cov0 <- "SST.UPW.4.mon6to9.0"
+covtit0 <- "with SST differential UPW index"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2016)
+years = c(1986, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(spawners0 ~ s(nspawners1, sp=0.6), data=dat)
+m1 = gam(spawners0 ~ s(nspawners1, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Jul-Sep catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","b", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.spawners
+cov0 <- "DMI.mon9to11.1"
+covtit0 <- "with Sep-Nov DMI prior year"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2016)
+years = c(1986, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(spawners0 ~ s(nspawners1, sp=0.6), data=dat)
+m1 = gam(spawners0 ~ s(nspawners1, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Jul-Sep catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","b", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.nonspawners
+cov0 <- "SST.UPW.4.mon6to9.0"
+covtit0 <- "with SST differential UPW index"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2015)
+years = c(1986, 1991, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6), data=dat)
+m1 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Oct-Mar catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","d", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+dat=dat.nonspawners
+cov0 <- "DMI.mon9to11.1"
+covtit0 <- "with Sep-Nov DMI prior year"
+dat$cov0=dat[[cov0]]
+dat <- subset(dat, Year>1982 & Year<2015)
+years = c(1986, 1991, 1994, 2013)
+loc=which(dat$Year %in% years)
+m0 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6), data=dat)
+m1 = gam(nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6) + s(cov0, sp=0.6), data=dat)
+xmin=5
+xmax=13
+mc <- m1
+vals <- SardineForecast::loogam(mc)
+plot(vals$actual, vals$pred, xlim=c(xmin,xmax), ylim=c(xmin,xmax),
+     xlab="Observed log Oct-Mar catch", ylab="Predicted log catch")
+lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
+rmse <- round(vals$RMSE, digits=2)
+mdae <- round(vals$MdAE, digits=2)
+ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
+#ll = paste0("LOOCV RMSE=", rmse)
+val=0.25*diff(par('usr')[3:4])/par('pin')[2]
+text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
+text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
+legend("topright","d", bty="n")
+text(vals$actual[loc], vals$pred[loc], labels=years, pos=4, offset=0.3, cex=tcex)
+
+par(oldpar)
+```
