@@ -1,5 +1,7 @@
 # Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)
 
+*data version SardineForecast `r packageVersion("SardineForecast")`* (accepted paper used 1.11)
+
 Elizabeth Eli Holmes$^1$, Smitha BR$^2$, Kumar Nimit$^3$, Sourav Maity$^3$, David M. Checkley, Jr.$^4$, Mark L. Wells$^5$, Vera L. Trainer$^1$
 
 1\. Northwest Fisheries Science Center, National Marine Fisheries
