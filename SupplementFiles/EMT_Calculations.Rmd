@@ -20,7 +20,7 @@ The second part of the report compares four different wind-products. The ERD pro
 
 Hersbach, H, Bell, B, Berrisford, P, et al. The ERA5 global reanalysis. Q J R Meteorol Soc. 2020; 146: 1999–2049. https://doi.org/10.1002/qj.3803
 
-# Load R libraries
+### Load R libraries
 
 ```{r libraries}
 library(ggplot2)
@@ -30,7 +30,7 @@ library(raster)
 library(rasterVis)
 ```
 
-# Get the data
+## Get the data
 
 Get pressure, wind, and Ekman Transport from ERDDAP servers. This gets the data for the current month and has all the needed parameters. Current FNMOC grid resolution is 1 degree while older resolution was 2.5 degree and later interpolated to 1 degree.
 
@@ -42,7 +42,7 @@ dat <- getdata("erdlasFnTransMon", date=dates)
 cat(colnames(dat))
 ```
 
-# Calculations of wind from FNMOC pressure grid
+## Calculations of wind from FNMOC pressure grid
 
 Schwing, F. B., O'Farrell, M., Steger, J., and Baltz, K., 1996: Coastal Upwelling Indices, West Coast of North America 1946 - 1995, NOAA Technical Memorandum NMFS-SWFSC-231
 
@@ -69,7 +69,7 @@ The `getwindfromP()` function at the end of this report shows the R code for the
 wind1 <- getwindfromP(dat)
 ```
 
-## Compare to wind numbers reported by ERD
+### Compare to wind numbers reported by ERD
 
 Show that this is the same as what is reported by SWFSC-ERD.
 
@@ -87,7 +87,7 @@ ggplot(df, aes(x=new, y=original)) + geom_point() +
   geom_abline(col="red") + facet_wrap(~name)
 ```
 
-# Calculations of Ekman Mass Transport and Pumping
+## Calculations of Ekman Mass Transport and Pumping
 
 The following equations are in 
 
@@ -120,7 +120,7 @@ EMT_y = - \tau_x/f \quad\quad EMT_x = \tau_y/f
 
 The `getEMT()` and `Cd()` functions shows how to compute these. `coast_angle` is added here for the upwelling index discussed below.
 
-## Compare EMT computed from wind to that reported by ERD
+### Compare EMT computed from wind to that reported by ERD
 
 The values are the same, confirming that the equations are correct.
 
@@ -142,7 +142,7 @@ ggplot(df, aes(x=new, y=original)) + geom_point() +
   geom_abline(col="red") + facet_wrap(~name)
 ```
 
-## Upwelling index
+### Upwelling index
 
 [ERD's Bakun upwelling index](https://oceanview.pfeg.noaa.gov/products/upwelling/bakun) is derived from the EMT that is perpendicular and away from the coast. Their upwelling index is computed by finding the EMT vector that is perpendicular to the coast and defining a positive vector as away from the coast and a negative vector as toward the coast. ERD then divides this value by 10. The coast angle is defined as the degrees rotation clockwise away from north-south with land to the west (see figure). The coast angle for the SW coast of India is 158 degrees.
 
@@ -184,7 +184,7 @@ ggplot(df, aes(x=new, y=original)) + geom_point() +
   geom_abline(col="red") + facet_wrap(~name)
 ```
 
-## Ekman Pumping
+### Ekman Pumping
 
 \begin{equation}
 \begin{gathered}
@@ -210,7 +210,7 @@ W_e = \frac{1}{p_{sw}}(\frac{\Delta EMT_x}{\Delta x} + \frac{\Delta EMT_y}{\Delt
 \end{equation}
 where $p_{sw}$ is the density of sea water (assumed to be $1023.6 kg m^{-3}$).
 
-# Comparison of wind stress from ASCAT winds versus ERD product
+## Comparison of wind stress from ASCAT winds versus ERD product
 
 In the coastal upwelling products (EMT based) provided by NOAA ERD, a non-linear coefficient of drag is used:
 
@@ -249,7 +249,7 @@ lines(seq(0,20,0.1), Cd(seq(0,20,0.1)), lwd=2)
 ```
 
 
-# Comparison of monthly wind products
+## Comparison of monthly wind products
 
 Get the FNMOC monthly winds. This is on a 1 degree grid. The data are from  https://coastwatch.pfeg.noaa.gov/erddap/info/erdlasFnWPr/index.html.
 
@@ -298,7 +298,7 @@ dfl <- df %>%
                      values_to = "value")
 ```
 
-## Winds on specific dates
+### Winds on specific dates
 
 FNMOC winds are quite different. ERA5 are much smoother than ASCAT winds.
 
@@ -356,7 +356,7 @@ at=seq(-3000,0,50)
 spplot(rst) + layer(sp.polygons(indiashp2, fill="white"))
 ```
 
-## Ekman Mass Transport and Pumping
+### Ekman Mass Transport and Pumping
 
 ```{r emt.plot}
 thedate <- "2010-07-01"
@@ -372,7 +372,7 @@ p2 <- ggplot(subset(dfl, longitude==plotlons[1] & date==thedate & name%in%pars),
 gridExtra::grid.arrange(p1,p2)
 ```
 
-## Compare the coastal EMT (used in paper)
+### Compare the coastal EMT (used in paper)
 
 Define the coast latitude-longitude line.
 
@@ -429,11 +429,11 @@ ggplot(subset(dfl2.coast.season, name=="EMTperp" & ASCAT<1000),
   ggtitle("2010-2019 EMT perpendicular to coast")
 ```
 
-# Conclusion
+## Conclusion
 
 For EMT perpendicular to the coast, there is a linear relationship between the ERA5 product versus ASCAT. But the values from ERA5 are biased downward (more negative) in the summer monsoon (Jun-Sep) period. The bias is stronger when using values closer to the coast and suggests that it is due to the nearshore gaps in the ASCAT data seen in the raster plot. The missing raster points nearshore would be those with lower EMT values in the summer.  However the generally linear relationship supports using the ERA5 product and the bias would not affect the analysis since the models include an intercept.
 
-# Functions in R
+## Functions in R
 
 ```{r echo=FALSE, asis=TRUE, comment=""}
 cat(paste("upwell <- ", paste(format(upwell), collapse="\n")))

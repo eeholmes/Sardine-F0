@@ -7,5 +7,5 @@ output:
 header-includes: \usepackage[labelformat=empty]{caption}
 ---
 
-```{r child = file.path('SupplementFiles', 'EMT_Calculations.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'EMT_Calculations.Rmd')}
 ```

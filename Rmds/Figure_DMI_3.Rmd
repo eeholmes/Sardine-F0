@@ -11,10 +11,10 @@ header-includes: \usepackage[labelformat=empty]{caption}
 ```
 
 ```{r}
-knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results='hide', message=FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 ```
 
-```{r figdmi-setupdata}
+```{r figdmi-setupdata, results='hide'}
 dat <- fullrespdat
 dat2=gam(nspawners0~nspawners1+spawners2+
            SSTICOAD.2.10.3.yr.runsum.0+Year+
@@ -30,7 +30,7 @@ dat2$cov2=MARSS::zscore(dat2$Precip.Kerala.mon6to7.0)
 dat2$cov1=MARSS::zscore(dat2$SSTICOAD.2.10.3.yr.runsum)
 ```
 
-```{r figdmi-fitmodels}
+```{r figdmi-fitmodels, results='hide'}
 library(MARSS)
 qfix=0.6
 Zt = array(NA, dim=c(1,3,dim(dat2)[1]))
@@ -86,7 +86,7 @@ fit.amo <- MARSS(dat2$resid, model=modlist, silent=TRUE, method="BFGS", inits=in
 ```
 
 
-```{r}
+```{r, results='hide'}
 valrmse <- function(err, win=10){
 trim=1/win
 trim=0
@@ -109,8 +109,12 @@ return(val)
 }
 ```
 
+```{r echo=FALSE}
+thecap <- "Model fit over 10-year windows for dynamic linear models of October-March catch 1960-2015 using the 2.5-year average SST from the ICOADS data set, June-July precipitation over land (from land gauges), and Atlantic Multidecadal Oscillation index as covariates. These models allowed the covariate model to evolve over time. The models were fit to the residuals of the simpler base model (with only prior October-March catch as a covariate) with the 1994 residual was removed. The covariates were z-scored (mean removed and standardized to variance of 1) and included as a third-order polynomial to allow a non-linear effect. The plot shows the RMSE of the model residuals computed on a 10-year sliding window."
+fullcap <- paste0("Figure ",  ref("fig:tvdmi"), ". ", thecap)
+```
 
-```{r figdmi-makefigure2, fig.cap=paste("Figure",  ref("fig:tvdmi")), fig.height=4, fig.width=6}
+```{r figdmi-makefigure2, fig.cap=fullcap, fig.align='center', fig.height=6, fig.width=8, results='hide'}
 #RMSE plot
 err.dmi <- (rbind(null=dat2$resid, dmi=MARSSresiduals(fit.dmi)$model.residuals[1,]))
 err.precip <- (rbind(null=dat2$resid, 

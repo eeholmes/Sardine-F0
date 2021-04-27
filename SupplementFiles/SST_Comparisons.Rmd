@@ -11,7 +11,7 @@ source(file.path(here::here(), "SupplementFiles", "get_EMT_functions.R"))
 load(file.path(here::here(), "SupplementFiles", "indiashp.RData"))
 ```
 
-# Load R libraries
+Load needed R libraries
 
 ```{r sstlibraries}
 library(ggplot2)
@@ -21,7 +21,7 @@ library(raster)
 library(rasterVis)
 ```
 
-# Get the data
+### Get the data
 
 Get SST from the  Daily Optimum Interpolation (OI), AVHRR Only, Version 2. This is on a 0.25 degree grid. The data are from  https://coastwatch.pfeg.noaa.gov/erddap/info/ncdcOisst2Agg/index.html.
 
@@ -78,7 +78,7 @@ sst3.mon <- sst3 %>% group_by(year, month, latitude, longitude) %>%
 sst3.mon$date <- paste0(sst3.mon$year, "-", sst3.mon$month, "-", "01")
 ```
 
-## Compare SST on specific dates
+### Compare SST on specific dates
 
 We can see this especially for certain months such as April 2010.
 
@@ -153,7 +153,7 @@ spplot(rst, main=thedate) + layer(sp.polygons(indiashp2, fill="white"))
 
 
 
-## SST along one longitude line
+### SST along one longitude line
 
 Create the data frame.
 
@@ -182,7 +182,7 @@ ggplot(subset(dfl, longitude==plotlons[1] & name%in%pars & year==2010),
   ggtitle(paste("longitude =", plotlons[1]))
 ```
 
-## Pairwise comparison by month
+### Pairwise comparison by month
 
 ```{r pairwisesstdf}
 dfl2 <- dfl %>% pivot_wider(names_from=data, values_from="value")
@@ -206,6 +206,6 @@ ggplot(dfl2, aes(x=ioSST, y=ERA5)) + geom_point() + geom_abline(col="red") +
   facet_wrap(~month, scales="free") + ggtitle("ERA5 versus ioSST 2010 by month")
 ```
 
-# Conclusion
+### Conclusion
 
 The ioSST and ERA5 products are similar (linear relationship) though biased for some months. The ioSST product was chosen since it uses only AVHRR data and would be similar to previous analyses of remote-sensing SST in the region.

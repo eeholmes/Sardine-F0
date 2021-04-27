@@ -14,12 +14,12 @@ header-includes: \usepackage[labelformat=empty]{caption}
   pre <- "A"
   figset <- "figapp:"
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results='hide', message=FALSE)
-thecap=paste0("")
-fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp1"), pre=pre))
+thecap <- "Predicted versus observed catches obtained with models with and without the June to July precipitation over land in year *t* included as a non-linear covariate. The lines indicate a perfect prediction where observed catch equals the predicted catch. The value to be predicted was left out in the model fitting. Values above the line are cases where the prediction was too high and values below the line are cases where the prediction was too low. a) July--September catch, modeled with only the prior-season October--March catch as a covariate. b) July--September catch, modeled with the prior-season October--March catch and precipitation over land as covariates. c) October--March catch, modeled with the prior-season October--March catch only. d) October--March, modeled as in panel c with the addition of the precipitation over land. LOOCV RMSE = leave one out root mean squared prediction error. This figure is the same as Figure 8 in the main text with a different environmental covariate."
+fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp1"), pre=pre), ". ", thecap)
 ```
 
 
-```{r outliers-fig2, echo=FALSE,fig.cap=fullcap, fig.width=8,fig.height=8, message=FALSE, warning=FALSE}
+```{r outliers-fig2, echo=FALSE, fig.cap=fullcap, fig.align='center', fig.width=8, fig.height=8, message=FALSE, warning=FALSE}
 # loocv rmse comparison
 jig=.3 #keep of the legend
 oldpar=par(mfrow=c(2,2), mar=c(4,6,1,0))
@@ -43,7 +43,6 @@ lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
 rmse <- round(vals$RMSE, digits=2)
 mdae <- round(vals$MdAE, digits=2)
 ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
-#ll = paste0("LOOCV RMSE=", rmse)
 val=0.25*diff(par('usr')[3:4])/par('pin')[2]
 text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
 text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
@@ -69,7 +68,6 @@ lines(c(xmin,xmax-jig),c(xmin,xmax-jig)) # -jig to keep off legend
 rmse <- round(vals$RMSE, digits=2)
 mdae <- round(vals$MdAE, digits=2)
 ll = paste0("LOOCV RMSE=", rmse, ", MdAE=", mdae)
-#ll = paste0("LOOCV RMSE=", rmse)
 val=0.25*diff(par('usr')[3:4])/par('pin')[2]
 text(par('usr')[1], par('usr')[4]-val, pos=4, labels=ll)
 text(par('usr')[1], par('usr')[4]-2*val, pos=4, labels=covtit0)
@@ -133,13 +131,15 @@ par(oldpar)
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
+if(!isLatex) cat("### &nbsp;")
 ```
 
 ```{r}
-fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp2"), pre=pre))
+thecap <- "Same as Figures A1 but using as the environmental covariate the SST differential upwelling index (difference between nearshore and offshore SST)."
+fullcap <- paste0("Figure ", ref(paste0(figset,"figoutliersapp2"), pre=pre), ". ", thecap)
 ```
 
-```{r outliers-fig3, echo=FALSE,fig.cap=fullcap, fig.width=8,fig.height=8, message=FALSE, warning=FALSE}
+```{r outliers-fig3, echo=FALSE, fig.cap=fullcap, fig.align='center', fig.width=8,fig.height=8, message=FALSE, warning=FALSE}
 # loocv rmse comparison
 jig=.3 #keep of the legend
 oldpar=par(mfrow=c(2,2), mar=c(4,6,1,0))

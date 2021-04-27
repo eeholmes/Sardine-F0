@@ -245,10 +245,10 @@ seltable
 ```
 
 ```{r echo=FALSE}
-latexkable <- function(dat, fullcap){
-x <- kable(dat, align=paste0("p{8cm}", paste0(rep("c",dim(dat)[2]-1),collapse="")), caption=fullcap, escape=FALSE, booktab=TRUE, longtable=TRUE, format="latex")
+latexkable <- function(dat, fullcap, first.align="p{8cm}"){
+x <- kable(dat, align=paste0(first.align, paste0(rep("c",dim(dat)[2]-1),collapse="")), caption=fullcap, escape=FALSE, booktab=TRUE, longtable=TRUE, format="latex")
 x <- kableExtra::kable_styling(x, latex_options = c("repeat_header"), repeat_header_text="", repeat_header_method="replace")
-x <- kableExtra::collapse_rows(x, latex_hline = "none")
+x <- kableExtra::collapse_rows(x, 1, latex_hline = "none")
 return(x)
 }
 ```

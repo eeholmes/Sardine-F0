@@ -1,7 +1,9 @@
 ---
 title: 'Appendices: Covariate tests'
 output:
+  html_document: default
   pdf_document: default
+  word_document: default
 header-includes: \usepackage[labelformat=empty]{caption}
 ---
 
@@ -40,7 +42,7 @@ baseformula <- "spawners0 ~ s(nspawners1, sp=0.6)"
 ```
 
 ```{r spawntable}
-seltable <- makeapptable(dat, nullmod, basemod, nullformula, baseformula, resp, vars$covnamelist, vars$covlags, include.num = TRUE)
+seltable <- makeapptable(dat, nullmod, basemod, nullformula, baseformula, resp, vars$covnamelist, vars$covlags, include.num = TRUE, isLatex = isLatex)
 ```
 
 ```{r spawnchlnames, echo=FALSE, eval=addchl}
@@ -60,25 +62,31 @@ m3form <- "poly(cov, 2, raw=TRUE)"
 
 ```{r chltable, eval=addchl}
 seltable = rbind(seltable, spacetmp)
-chlbody <- makeapptable(dat, nullmod, basemod, nullformula, baseformula, resp, vars$covnamelist, vars$covlags, m3form=m3form, include.num = TRUE)
+chlbody <- makeapptable(dat, nullmod, basemod, nullformula, baseformula, resp, vars$covnamelist, vars$covlags, m3form=m3form, include.num = TRUE, isLatex = isLatex)
 seltable <- rbind(seltable, chlbody)
 ```
 
 ```{r print-apptable1, echo=FALSE}
 seltable = seltable[,c("Model", "Residual.df", "Adj.R2", "RMSE", "AIC", "LOOCV", "LOOMd")]
-colnames(seltable) <- c("Model", "Resid. df", "Adj. R2", "RMSE", "AICc", "LOOCV", "LOOMdAE")
+colnames(seltable) <- c("Model", "Resid. df", "Adj. R2", "RMSE", "AICc", "LOOCV RMSE", "LOOCV MdAE")
 if(isLatex) colnames(seltable)=c("Model", "\\shortstack{Resid.\\\\df}", "\\shortstack{Adj.\\\\$R^2$}", "RMSE", "AICc", "\\shortstack{LOOCV\\\\RMSE}", "\\shortstack{LOOCV\\\\MdAE}")
 
-thecap=paste("Covariate tests for the Jul-Sep catch ($S_t$). M is the base model with only prior season Oct-Mar catch ($W_{t-1}$) as the covariate. To the base model, the environmental covariates are added. Nearshore is 0-80km and regional is 0-160km. The SST data are from the Optimum Interpolation (ioSST) AVHRR data set. The models are nested sets, e.g. 1, 2a, 3a and 1, 2b, 3b.")
+thecap <- "Covariate tests for the Jul-Sep catch (*S~t~*). M is the base model with only prior season Oct-Mar catch (*W~t-1~*) as the covariate. To the base model, the environmental covariates are added. Nearshore is 0-80km and regional is 0-160km. The SST data are from the Optimum Interpolation (ioSST) AVHRR data set. The models are nested sets, e.g. 1, 2a, 3a and 1, 2b, 3b."
 fullcap=paste("Table ", ref("apptab:spawnercovariate-models", pre="A"), ". ", thecap, sep="")
-
+notes <- "LOOCV = Leave one out cross-validation. RMSE = root mean square error. MdAE = median absolute error. AICc = Akaike Information Criterion corrected for small sample size. $\\dagger$ and $\\dagger\\dagger$ = AICc greater than 2 and greater than 5 below model M (base catch model).  $\\ddagger$, $\\ddagger\\ddagger$, and ${\\ddagger}{\\ddagger}{\\ddagger}$  = LOOCV RMSE 5\\%, 10\\% and 20\\% below model M, respectively. *t* indicates current year and *t-1* is the prior year. *W~t~* spans two calendar years (Oct-Mar); *t* is the year in Oct. Thus if *t*=2014, *S~t~* is Jul 2014 to Sep 2014 and *W~t-1~* is Oct 2013 to Mar 2014. For covariates that are multiyear, such as the multiyear average SST, *t* is the calendar year at the end of the multiyear span; thus the 2.5 year average SST for 2014 is Jan 2012 to Jun 2014."
 if(isLatex){
   latexkable(seltable, fullcap)
 }else{
- kable(seltable, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse="")), caption=fullcap, escape=FALSE)
+# kable(seltable, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse="")), caption=fullcap, escape=FALSE)
+library(kableExtra)
+seltable %>%
+  kbl(caption = fullcap, escape=FALSE, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse=""))) %>%
+  kable_classic(full_width = FALSE) %>%
+  footnote(general = notes, general_title = "Notes: ", footnote_as_chunk = TRUE)
 }
-
-
 ```
 
-Notes: LOOCV = Leave one out cross-validation. RMSE = root mean square error. MdAE = median absolute error. AICc = Akaike Information Criterion corrected for small sample size. $\dagger$ and $\dagger\dagger$ = AICc greater than 2 and greater than 5 below model M (base catch model).  $\ddagger$, $\ddagger\ddagger$, and ${\ddagger}{\ddagger}{\ddagger}$  = LOOCV RMSE 5\%, 10\% and 20\% below model M, respectively. $t$ indicates current year and $t-1$ is the prior year. $W_t$ spans two calendar years (Oct-Mar); $t$ is the year in Oct. Thus if $t=2014$, $S_t$ is Jul 2014 to Sep 2014 and $W_{t-1}$ is Oct 2013 to Mar 2014. For covariates that are multiyear, such as the multiyear average SST, $t$ is the calendar year at the end of the multiyear span; thus the 2.5 year average SST for 2014 is Jan 2012 to Jun 2014.
+```{r eval=isLatex, results='asis'}
+cat("Notes: LOOCV = Leave one out cross-validation. RMSE = root mean square error. MdAE = median absolute error. AICc = Akaike Information Criterion corrected for small sample size. $\\dagger$ and $\\dagger\\dagger$ = AICc greater than 2 and greater than 5 below model M (base catch model).  $\\ddagger$, $\\ddagger\\ddagger$, and ${\\ddagger}{\\ddagger}{\\ddagger}$  = LOOCV RMSE 5\\%, 10\\% and 20\\% below model M, respectively. $t$ indicates current year and $t-1$ is the prior year. $W_t$ spans two calendar years (Oct-Mar); $t$ is the year in Oct. Thus if $t=2014$, $S_t$ is Jul 2014 to Sep 2014 and $W_{t-1}$ is Oct 2013 to Mar 2014.  For covariates that are multiyear, such as the multiyear average SST, $t$ is the calendar year at the end of the multiyear span; thus the 2.5 year average SST for 2014 is Jan 2012 to Jun 2014.")
+```
+

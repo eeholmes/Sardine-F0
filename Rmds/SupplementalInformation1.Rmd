@@ -7,71 +7,41 @@ output:
 header-includes: \usepackage[labelformat=empty]{caption}
 ---
 
-```{r child = 'setup.Rmd'}
+```{r child = file.path(here::here(), 'setup.Rmd')}
+
 ```
 
 ```{r echo=FALSE}
 Supplement <- TRUE # Change if this will be labelled appendix
-if(!exists(".rmdenvir")) .rmdenvir = environment()
-# here::set_here()
+if (!exists(".rmdenvir")) .rmdenvir <- environment()
 ```
 
-# Tests for prior season catch as covariate
+## Tests for prior season catch as covariate
 
-```{r child = file.path('SupplementFiles', 'Table App A spawner model.Rmd')}
-```
-
-```{r, results="asis", echo=FALSE}
-cat("\\clearpage")
-```
-
-```{r child = file.path('SupplementFiles', 'Table App A nonspawner model.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table App A spawner model.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-# Tests for environmental variables as covariates
-
-```{r child = file.path('SupplementFiles', 'Table App B spawner covariates.Rmd'), eval=FALSE}
-```
-
-```{r, results="asis", echo=FALSE, eval=FALSE}
-cat("\\clearpage")
-```
-
-```{r child = file.path('SupplementFiles', 'Table App B nonspawner covariates M with S2.Rmd'), eval=FALSE}
-```
-
-```{r, results="asis", echo=FALSE, eval=FALSE}
-cat("\\clearpage")
-```
-
-```{r child = file.path('SupplementFiles', 'Table App B nonspawner covariates M wo S2.Rmd'), eval=FALSE}
-```
-
-```{r child = file.path('AppendixFiles', 'AppendixNonSpawner.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table App A nonspawner model.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-<!--
-# Tests for Chlorophyll-a as a covariate
--->
+## Tests for environmental variables as covariates
 
-```{r child = file.path('SupplementFiles', 'Table App C chlorophyll.Rmd'), eval=FALSE}
+
+```{r child = file.path(here::here(), 'AppendixFiles', 'AppendixNonSpawner.Rmd')}
 ```
 
-```{r, results="asis", echo=FALSE, eval=FALSE}
-cat("\\clearpage")
-```
 
-# Tests with upwelling and precipitation interactions
+## Tests with upwelling and precipitation interactions
 
-```{r child = file.path('SupplementFiles', 'Table_Precip_Interactions.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table_Precip_Interactions.Rmd')}
 ```
 
 
@@ -79,60 +49,62 @@ cat("\\clearpage")
 cat("\\clearpage")
 ```
 
-# Validation of catch base models
+## Validation of catch base models
 
-```{r child = file.path('SupplementFiles', 'Table App D.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table App D.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-# Comparison of land and oceanic rainfall measurements
+## Comparison of land and oceanic rainfall measurements
 
 ```{r echo=FALSE}
-#set the table pre
-if(Supplement){
+# set the table pre
+if (Supplement) {
   pre <- "S"
   figset <- "figsupp:"
-}else{
+} else {
   pre <- "E"
   figset <- "figappE:"
 }
 ```
 
 ```{r echo=FALSE}
-thecap=paste0("Monthly precipitation measured over land via land gauges versus the precipitation measured via remote sensing over the ocean.")
-fullcap.precip <- paste0("Figure ", ref(paste0(figset,"figprecip"), pre=pre), ". ", thecap)
+thecap <- paste0("Monthly precipitation measured over land via land gauges versus the precipitation measured via remote sensing over the ocean.")
+fullcap.precip <- paste0("Figure ", ref(paste0(figset, "figprecip"), pre = pre), ". ", thecap)
 ```
 
 ```{r rainfall.mon.comparison, echo=FALSE,fig.cap=fullcap.precip, fig.width=6,fig.height=6,message=FALSE,warning=FALSE}
-plot(seio_covariates_mon$Precip.Kerala, seio_covariates_mon$precip.gpcp.kerala, ylab="Monthly land precipitation (mm)",
-xlab="Monthly ocean precipitation (average mm/day)")
+plot(seio_covariates_mon$Precip.Kerala, seio_covariates_mon$precip.gpcp.kerala,
+  ylab = "Monthly land precipitation (mm)",
+  xlab = "Monthly ocean precipitation (average mm/day)"
+)
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-# Comparison of multiyear average regional SST from AVHRR and ICOADS
+## Comparison of multiyear average regional SST from AVHRR and ICOADS
 
 ```{r echo=FALSE}
-thecap=paste0("Multiyear average regional SST from the AVHRR versus ICOADS data sets.")
-fullcap.dmi <- paste0("Figure ", ref(paste0(figset,"figsstvdmi"), pre=pre), ". ", thecap)
+thecap <- paste0("Multiyear average regional SST from the AVHRR versus ICOADS data sets.")
+fullcap.dmi <- paste0("Figure ", ref(paste0(figset, "figsstvdmi"), pre = pre), ". ", thecap)
 ```
 
 ```{r sst.dmi.comparison, echo=FALSE,fig.cap=fullcap.dmi, fig.width=6,fig.height=6,message=FALSE,warning=FALSE}
-plot(fullrespdat$SSTICOAD.2.10.3.yr.runsum.0, fullrespdat$SST.2.10.3.yr.runsum.0, xlab="2.5-year average SST - ICOADS", ylab="2.5-year average regional SST - AVHRR")
+plot(fullrespdat$SSTICOAD.2.10.3.yr.runsum.0, fullrespdat$SST.2.10.3.yr.runsum.0, xlab = "2.5-year average SST - ICOADS", ylab = "2.5-year average regional SST - AVHRR")
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-# SST Product Comparisons
+## SST Product Comparisons
 
-```{r child = file.path('SupplementFiles', 'SST_Comparisons.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'SST_Comparisons.Rmd')}
 ```
 
 
@@ -140,20 +112,21 @@ cat("\\clearpage")
 cat("\\clearpage")
 ```
 
-# Comparison of multiyear average regional SST and ocean climate indices
+## Comparison of multiyear average regional SST and ocean climate indices
 
 ```{r echo=FALSE}
-thecap=paste0("Multiyear average regional SST from AVHRR versus ocean climate indices (AMO, ONI, PDO and DMI) 1983-2016. The corvariates are those used in the analyses. Multi-year SST is the 2.5-year average of the regional (0-160km from coast) SST, so January $t-2$ to July $t$. The climate indices are 12-month average from July $t-1$ to June $t$. For the analyses, Sep-Nov average DMI in the prior year was used so that is also added.")
-fullcap.sstvamo <- paste0("Figure ", ref(paste0(figset,"figsstvamo"), pre=pre), ". ", thecap)
+thecap <- paste0("Multiyear average regional SST from AVHRR versus ocean climate indices (AMO, ONI, PDO and DMI) 1983-2016. The corvariates are those used in the analyses. Multi-year SST is the 2.5-year average of the regional (0-160km from coast) SST, so January $t-2$ to July $t$. The climate indices are 12-month average from July $t-1$ to June $t$. For the analyses, Sep-Nov average DMI in the prior year was used so that is also added.")
+fullcap.sstvamo <- paste0("Figure ", ref(paste0(figset, "figsstvamo"), pre = pre), ". ", thecap)
 ```
 
-```{r sst.amo.comparison, echo=FALSE,fig.cap=fullcap.sstvamo, fig.width=6,fig.height=6,message=FALSE,warning=FALSE}
-library("ggplot2")                     # Load ggplot2 package
-library("GGally")    
+```{r sst.amo.comparison, echo=FALSE,fig.cap=fullcap.sstvamo, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+#library("ggplot2")
+#library("GGally")
 dat <- fullrespdat
-df <- data.frame(SST=scale(dat$SST.2.10.3.yr.runsum.0), AMO=scale(dat$AMO.mon7to6.0), PDO=scale(dat$PDO.mon7to6.0), ONI=scale(dat$ONI.mon7to6.0), DMI=scale(dat$DMI.mon7to6.0), DMI2=scale(dat$DMI.mon9to11.1))
-ggpairs(df, columnLabels=c("2.5-yr SST", "Jul-Jun AMO", "Jul-Jun PDO", "Jul-Jun ONI", "Jul-Jun DMI", "Sep-Nov DMI"))
+df <- data.frame(SST = scale(dat$SST.2.10.3.yr.runsum.0), AMO = scale(dat$AMO.mon7to6.0), PDO = scale(dat$PDO.mon7to6.0), ONI = scale(dat$ONI.mon7to6.0), DMI = scale(dat$DMI.mon7to6.0), DMI2 = scale(dat$DMI.mon9to11.1))
+GGally::ggpairs(df, columnLabels = c("2.5-yr SST", "Jul-Jun AMO", "Jul-Jun PDO", "Jul-Jun ONI", "Jul-Jun DMI", "Sep-Nov DMI"))
 ```
 
-
-
+```{r, results="asis", echo=FALSE}
+cat("\\clearpage")
+```

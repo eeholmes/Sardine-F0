@@ -1,8 +1,47 @@
-# Supplemental Information
+---
+title: "Supplemental Information: Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)"
+author: EE Holmes, S BR, K Nimit, S Maity, DM Checkley, Jr., ML Wells, VL Trainer
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  html_document:
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+header-includes: \usepackage[labelformat=empty]{caption}
+---
 
-## Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)
+```{r, results="asis", echo=FALSE}
+cat("\\clearpage")
+```
+
+# Supplement 1: Full model tests and diagnostics
 
 *data version SardineForecast `r packageVersion("SardineForecast")`* (accepted paper used 1.11)
 
-Elizabeth Eli Holmes$^1$, Smitha BR$^2$, Kumar Nimit$^3$, Sourav Maity$^3$, David M. Checkley, Jr.$^4$, Mark L. Wells$^5$, Vera L. Trainer$^1$
+```{r child = file.path(here::here(), 'Rmds','SupplementalInformation1.Rmd')}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("\\clearpage")
+```
+
+# Supplement 2: Data sources and raw data
+
+*data version SardineForecast `r packageVersion("SardineForecast")`* (accepted paper used 1.11)
+
+```{r child = file.path(here::here(), 'Rmds','SupplementalInformation2.Rmd')}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("\\clearpage")
+```
+
+# Supplement 3: Ekman Mass Transport and Pumping Calculations
+
+```{r child = file.path(here::here(), 'Rmds','SupplementalInformation3.Rmd')}
+```
+
+
 

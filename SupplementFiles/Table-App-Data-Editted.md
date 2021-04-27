@@ -3,8 +3,8 @@ output:
   pdf_document: default
   html_document: default
 ---
-Landings Data
-=============
+
+## Landings Data
 
 <p>
 We used landings (in metric tons) of oil sardines in
@@ -48,8 +48,7 @@ and Goa.” Central Marine Fisheries Research Institute. Report.
 <hr />
 
 
-SST Data
-========
+## SST Data
 
 <p>
 We used two primary reanalysis SST data sets: ioSST and ICOADS SST. We also compared to a third non-reanalysis data set. Reanalysis means that the data set uses multiple data sources and may use interpolation to fill in missing values. See Supplement 1 for comparisons of the data sources on a grid. 
@@ -129,8 +128,7 @@ satellites.” <em>Journal of Geophysical Research: Oceans</em>,
 Huang, Boyin; Liu, Chunying; Banzon, Viva F.; Freeman, Eric; Graham, Garrett; Hankins, Bill; Smith, Thomas M.; Zhang, Huai-Min. (2020): NOAA 0.25-degree Daily Optimum Interpolation Sea Surface Temperature (OISST), Version 2.1. [indicate subset used]. NOAA National Centers for Environmental Information. https://doi.org/10.25921/RE9P-PT57. Accessed November 10, 2020.
 </p>
 
-Upwelling Data
-==============
+## Upwelling Data
 
 <p>
 Four upwelling indices were used: a SST nearshore
@@ -273,8 +271,7 @@ Mendelssohn R (2020). rerddapXtracto: Extracts Environmental Data from 'ERDDAP' 
 </p>
 
 
-Precipitation Data
-==================
+## Precipitation Data
 
 <p>
 We used three precipitation data sets off the southwest coast of India. Two are satellite
@@ -347,8 +344,7 @@ NCEI (2017). Global Precipitation Climatology Project Monthly Product Version 2.
 
 <hr />
 
-Chlorophyll Data
-================
+## Chlorophyll Data
 
 <p>
 We used Chlorophyll-a products developed by the Ocean Biology Processing
@@ -401,8 +397,7 @@ oceans: A novel approach based on three-band reflectance difference.”
 <em>Journal of Geophysical Research: Oceans</em>, <b>117</b>(C1).
 </p>
 
-Ocean Climate Indices
-=========
+## Ocean Climate Indices
 
 <p>
 We used the following ocean climate indices: Oceanic Nino Index, Dipole Mode Index, Pacific Decadal Oscillation index and Atlantic Multidecadal Oscillation index.

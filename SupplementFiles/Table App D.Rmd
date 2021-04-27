@@ -12,6 +12,15 @@ header-includes: \usepackage[labelformat=empty]{caption}
 ```
 
 ```{r echo=FALSE}
+# This file loads an RData object for the LOOCV stats for the DLM models. The file was created as
+# FittedLooPred <- fits(data=dforig)
+# FittedLooPred.np <- fits(data=dforig, resp="nspawners0")
+# save(FittedLooPred, file="FittedLooPred.Rdata")
+# For the other types of models the LOOCV stats are created anew each time the table is made
+#  slow but not horribly
+```
+
+```{r echo=FALSE}
 #set the table pre
 Supplement=TRUE
 if(Supplement){
@@ -439,7 +448,7 @@ return(p)
 ```
 
 
-## Test set-up
+### Test set-up
 
 This describes a variety of cross-validations used to select the base model for landing. The base model is the model with no environmental covariates only prior landings as covariates.  
 
@@ -472,7 +481,7 @@ The models were fit to the 1956-2015 landings (full data) and 1984-2015 (data th
 
 The model performance was measured by AIC, AICc and LOOCV prediction. The LOOCV prediction error is the data point $t$ minus the predited value for data point $t$. This is repeated for all data points $t$. The influence of single data points to on model performance was evaluated by leaving out one data point, fitting to the remaining data and computing the model performance (via AIC, AICc or LOO prediction error). 
 
-## Results: Jul-Sep landings
+### Results: Jul-Sep landings
 
 The Figure `r ref(paste0(figset, "fig1"), pre=pre)` shows the $\Delta$AIC for the models: GAM, linear, and DLM. The figure shows that for the 1984-2015 data with any year left out, the set of models that has the lowest AIC was always the GAM or linear model with Oct-Mar in the prior season. There were cases where deleting a year removed one of these two from the 'best' category, but they were still in the 'competitive' category with a $\Delta$AIC less than 2. 
 
@@ -487,16 +496,6 @@ fullcap1 <- paste0("Figure ", ref(paste0(figset,"fig1"), pre=pre), ". ", thecap)
 
 ```{r appD-spawners-aic1984, echo=FALSE, fig.cap=fullcap1, fig.width=8, fig.height=figh, message=FALSE, warning=FALSE}
 p <- looplot1(resfun="aic", type="s1984")
-p
-```
-
-```{r echo=FALSE, eval=FALSE}
-thecap=paste0("\\(\\Delta\\)AIC for the Jul-Sep landings base models with one year deleted using the full landings data set 1956-2015. \\(\\Delta\\)AIC is AIC of the model minus the AIC of the best (lowest AIC model) in the set. Black models were the best models in the set and within 0.5 AIC of each other. Grey are models within 2 of the best model, thus competitive to the best models. Deleted year is shown on the x-axis; the farthest right column has no year removed.")
-fullcap2 <- paste0("Figure ", ref(paste0(figset,"fig2"), pre=pre), ". ", thecap)
-```
-
-```{r appD-spawners-aic1956, echo=FALSE, fig.cap=fullcap2, fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-p <- looplot1(resfun="aic", type="s1956")
 p
 ```
 
@@ -562,23 +561,6 @@ p3 <- p3 + annotation_custom(grob)
 grob <- grobTree(textGrob("C", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
 p3 <- p3 + annotation_custom(grob)
 
-# fit <- myfits[[1]]
-# p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
-# dlmmods = stringr::str_detect(names(myfits),"dlm")
-# for(fit in myfits[dlmmods]){
-#   tmp <- data.frame(Year=fit$data$Year, pred=fit$pred.smooth)
-#   ltyp <- "solid"
-#   if(fit$model=="dlm(Oct-Mar(t-1))") ltyp <- "twodash"
-#   p <- p + geom_line(data=tmp, aes(x=Year, y=pred, color="Predicted"), linetype=ltyp)
-# }
-# p4 <- p + scale_color_manual( values = c( Actual="black", Predicted="blue")) +  labs(color="Smoothed") + xlab('') +  ylab('Jul-Sep Catch') + theme_classic() + theme(
-#   legend.justification = c(1,0), legend.position = c(1,0),
-#   legend.key = element_rect(colour = "transparent", fill = "white"))
-# grob <- grobTree(textGrob("DLM models", x=0.1,  y=0.95, hjust=0, gp=gpar(col="blue", fontsize=13)))
-# p4 <- p4 + annotation_custom(grob)
-# grob <- grobTree(textGrob("D", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
-# p4 <- p4 + annotation_custom(grob)
-
 fit <- myfits[[1]]
 p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
 nullmods = stringr::str_detect(names(myfits),"null offset only")
@@ -608,78 +590,11 @@ p <- looplot1(resfun="looRMSE", type="s1984")
 p
 ```
 
-```{r appd-spawners-loo56, echo=FALSE, fig.cap="Figure XD. Leave-one-out predictive performance (leave out a year, fit, predict that year) for the Jul-Sep landings base models. The performance (DelLOO) is the RSME (root mean square error).", fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-p <- looplot1(resfun="looRMSE", type="s1956")
-p
-```
-
-
-
-```{r appd-spawners2-aic-9495, echo=FALSE,fig.cap="Figure XD. Delta AIC for the Jul-Sep landings base models with 1995 and one other year deleted. The deleted year is shown on the x-axis.", fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-res <- spawnerinf(rmyr, resfun="aicc")
-res <- res[res$model%in%modelset,]
-
-minrow <- apply(res[2:ncol(res)],2,function(x){which(x==min(x))})
-baseres=matrix(1,nrow(res),1)%*%matrix(as.numeric(res[cbind(minrow,2:ncol(res))]),nrow=1)
-delaic2=res[,2:ncol(res)]-baseres
-delaic2=delaic2[,!(colnames(delaic2)%in%rmyr)]
-rownames(delaic2)=res$model
-
-library(tidyverse)
-df <- gather(cbind(model=res$model, delaic2), year, aic, 2:ncol(delaic2))
-df$DelAIC <- cut(df$aic, c(-0.001, .5, 2, 4, 100))
-levels(df$DelAIC) <- c("Best (0-0.5)", "Competitive (< 2)", "Uncompetitive (2-4)", "Poor (> 4)")
-
-p <- ggplot(df, aes(year, model)) +
-  geom_tile(aes(fill = DelAIC), colour = "grey50")
-p + theme(axis.text.x = element_text(angle = 90, vjust=0.5, hjust=1), aspect.ratio = aspr) + scale_fill_manual(values=Palette4)
-```
-
-```{r appd-spawners-loo-9495, echo=FALSE,fig.cap="Figure XD. Leave-one-out predictive performance for the Jul-Sep landings base models with 1995 removed. See Figure 2D for details on the figure.", fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-# res2 <- resinf(resfun="loo", resp="spawner0")
-# res <- resinf(resfun="loo", resp="nspawner0")
-# save(res, res2, file="basemodsloo.RData")
-load("basemodsloo.RData")
-vals=res2.8694
-vals <- vals[vals$model%in%modelset,]
-minrow <- apply(vals[,2:ncol(vals)],2,function(x){which(x==min(x))})
-baseres=matrix(1,nrow(vals),1)%*%matrix(as.numeric(vals[cbind(minrow,2:ncol(vals))]),nrow=1)
-tmp=vals[,2:ncol(vals)]/baseres
-rownames(tmp)=vals$model
-
-library(tidyverse)
-df <- gather(cbind(model=vals$model, tmp), year, lev, 2:ncol(tmp))
-df$DelLOO <- cut(df$lev, c(-.2,-.01,0.01,.05,1))
-df$DelLOO <- cut(df$lev, c(.999,1.01,1.05,1.10,1.2,3))
-levels(df$DelLOO) <- c("Best (< 1%)", "Similar (1-2%)", "Worse (5-10%)", "Much worse (10-20%)", "Worst (>20%)")
-p <- ggplot(df, aes(year, model)) +
-  geom_tile(aes(fill = DelLOO), colour = "grey50")
-p + theme(axis.text.x = element_text(angle = 90, vjust=0.5, hjust=1), aspect.ratio = aspr) + scale_fill_manual(values=c(Palette4,"red"))
-```
-
-```{r echo=FALSE, eval=FALSE}
-thecap=paste0("R-squared for the Jul-Sep landings base models with one year deleted. The deleted year is shown on the x-axis.")
-fullcap5 <- paste0("Figure ", ref(paste0(figset,"fig5"), pre=pre), ". ", thecap)
-```
-
-```{r appd-spawners-r2, echo=FALSE,fig.cap=fullcap5, fig.width=8,fig.height=figh,message=FALSE,warning=FALSE, eval=FALSE}
-res <- spawnerinf(rmyr, resfun="r2")
-res <- res[res$model%in%modelset,]
-
-library(tidyverse)
-df <- gather(res, year, lev, 2:ncol(res))
-df$r2 <- cut(df$lev, c(0, .3, .5, .6, .7))
-
-p <- ggplot(df, aes(year, model)) +
-  geom_tile(aes(fill = r2), colour = "grey50")
-p + theme(axis.text.x = element_text(angle = 90, vjust=0.5, hjust=1), aspect.ratio = aspr) + scale_fill_manual(values=Palette4)
-```
-
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-## Validation of the Oct-Mar landings base models
+### Validation of the Oct-Mar landings base models
 
 Figure `r ref(paste0(figset,"fig6"), pre=pre)` shows that for Oct-Mar landings with the 1984 to 2015 data, the best model was always GAM with Oct-Mar in the prior season and Jul-Sep landings two seasons prior.  For the one step ahead predictions, a simpler models had the lower prediction errors: GAM with Oct-Mar in the prior season as the only covariate (Figure `r ref(paste0(figset,"fig9"), pre=pre)`).
 
@@ -693,92 +608,6 @@ p <- looplot1(resfun="aic", type="ns1984")
 p
 ```
 
-```{r appD-nspawners-aic1956, echo=FALSE, fig.cap="Figure XD. \\(\\Delta\\)AIC for the Oct-Mar landings base models with one year deleted using the full landings data set 1956-2015. \\(\\Delta\\)AIC is AIC of the model minus the AIC of the best (lowest AIC model) in the set. Black models were the best models in the set and within 0.5 AIC of each other. Grey are models within 2 of the best model, thus competitive to the best models. Deleted year is shown on the x-axis; the farthest right column has no year removed.", fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-p <- looplot1(resfun="aic", type="ns1956")
-p
-```
-
-```{r echo=FALSE, eval=FALSE}
-thecap=paste0("Leave one out (LOO) one step ahead prediction errors for the linear, GAM, and DLM models of Oct-Mar landings. The data point at year t on the x-axis is predicted from the data up to year t-1.")
-fullcap8 <- paste0("Figure ", ref(paste0(figset,"fig8"), pre=pre), ". ", thecap)
-```
-
-```{r appD-nspawners-fits2, echo=FALSE, fig.cap=fullcap8 , fig.width=8, fig.height=6, message=FALSE, warning=FALSE, eval=FALSE}
-# FittedLooPred <- fits(data=dforig)
-# FittedLooPred.np <- fits(data=dforig, resp="nspawners0")
-# save(FittedLooPred, file="FittedLooPred.Rdata")
-load("FittedLooPred.Rdata")
-
-myfits <- FittedLooPred.np1956$LooPred
-
-linmods = stringr::str_detect(names(myfits),"lin")
-fit <- myfits[[1]]
-p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
-for(fit in myfits[linmods]){
-  tmp <- data.frame(Year=na.omit(fit$data)$Year, pred=fit$pred)
-  p <- p + geom_line(data=tmp, aes(x=Year, y=pred, color="One step ahead"))
-}
-p1 <- p + scale_color_manual( values = c( Actual="black", `One step ahead`="blue")) +  labs(color="") + 
-  xlab('') +  ylab('Jul-Sep Catch') + theme_classic() + theme(
-  legend.justification = c(1,0), legend.position = c(1,0),
-  legend.key = element_rect(colour = "transparent", fill = "white"))
-grob <- grobTree(textGrob("linear models", x=0.1,  y=0.95, hjust=0, gp=gpar(col="blue", fontsize=13)))
-p1 <- p1 + annotation_custom(grob)
-grob <- grobTree(textGrob("A", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
-p1 <- p1 + annotation_custom(grob)
-
-gammods = stringr::str_detect(names(myfits),"gam")
-fit <- myfits[[1]]
-p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
-for(fit in myfits[gammods]){
-  tmp <- data.frame(Year=na.omit(fit$data)$Year, pred=fit$pred)
-  p <- p + geom_line(data=tmp, aes(x=Year, y=pred, color="One step ahead"))
-}
-p2 <- p + scale_color_manual( values = c( Actual="black", `One step ahead`="blue")) +  labs(color="") + xlab('') +  ylab('Jul-Sep Catch') + theme_classic() + theme(
-  legend.justification = c(1,0), legend.position = c(1,0),
-  legend.key = element_rect(colour = "transparent", fill = "white"))
-grob <- grobTree(textGrob("GAM models", x=0.1,  y=0.95, hjust=0, gp=gpar(col="blue", fontsize=13)))
-p2 <- p2 + annotation_custom(grob)
-grob <- grobTree(textGrob("B", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
-p2 <- p2 + annotation_custom(grob)
-
-fit <- myfits[[1]]
-p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
-dlmmods = stringr::str_detect(names(myfits),"dlm")
-for(fit in myfits[dlmmods]){
-  tmp <- data.frame(Year=fit$data$Year, pred=fit$pred, pred.smooth=fit$pred.smooth)
-  ltyp <- "solid"
-  #if(fit$model=="dlm(Oct-Mar(t-1))") ltyp <- "twodash"
-  p <- p + geom_line(data=tmp, aes(x=Year, y=pred, color="One step ahead"), linetype=ltyp)
-  #p <- p + geom_line(data=tmp, aes(x=Year, y=pred.smooth, color="Smoothed"), linetype=ltyp)
-}
-p3 <- p + scale_color_manual( values = c( Actual="black", `One step ahead`="blue", Smoothed="red")) +  labs(color="") + xlab('') +  ylab('Jul-Sep Catch') + theme_classic() + theme(
-  legend.justification = c(1,0), legend.position = c(1,0),
-  legend.key = element_rect(colour = "transparent", fill = "white"))
-grob <- grobTree(textGrob("DLM models", x=0.1,  y=0.95, hjust=0, gp=gpar(col="blue", fontsize=13)))
-p3 <- p3 + annotation_custom(grob)
-grob <- grobTree(textGrob("C", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
-p3 <- p3 + annotation_custom(grob)
-
-fit <- myfits[[1]]
-p <- ggplot() + geom_point(data=fit$data, aes(x=Year, y=resp, color="Actual"))
-nullmods = stringr::str_detect(names(myfits),"null offset only")
-for(fit in myfits[nullmods]){
-  tmp <- data.frame(Year=fit$data$Year, pred=fit$pred)
-  ltyp <- "solid"
-  p <- p + geom_line(data=tmp, aes(x=Year, y=pred, color="One step ahead"), linetype=ltyp)
-}
-p4 <- p + scale_color_manual( values = c( Actual="black", `One step ahead`="blue")) +  labs(color="") + xlab('') +  ylab('Jul-Sep Catch') + theme_classic() + theme(
-  legend.justification = c(1,0), legend.position = c(1,0),
-  legend.key = element_rect(colour = "transparent", fill = "white"))
-grob <- grobTree(textGrob("Null model", x=0.1,  y=0.95, hjust=0, gp=gpar(col="blue", fontsize=13)))
-p4 <- p4 + annotation_custom(grob)
-grob <- grobTree(textGrob("D", x=0.05,  y=0.1, hjust=0, gp=gpar(col="black", fontsize=13)))
-p4 <- p4 + annotation_custom(grob)
-
-gridExtra::grid.arrange(p1, p3, p2, p4, nrow = 2)
-```
-
 ```{r echo=FALSE}
 thecap=paste0("Leave-one-out predictive performance (leave out a year, fit, predict that year) for the Oct-Mar landings base models. The performance (DelLOO) is the RSME (root mean square error).")
 fullcap9 <- paste0("Figure ", ref(paste0(figset,"fig9"), pre=pre), ". ", thecap)
@@ -786,16 +615,6 @@ fullcap9 <- paste0("Figure ", ref(paste0(figset,"fig9"), pre=pre), ". ", thecap)
 
 ```{r appd-nspawners-looMd, echo=FALSE, fig.cap=fullcap9, fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=TRUE}
 p <- looplot1(resfun="looRMSE", type="ns1984")
-p
-```
-
-```{r echo=FALSE, eval=FALSE}
-thecap=paste0("Leave-one-out predictive performance (leave out a year, fit, predict that year) for the Oct-Mar landings base models. The performance (DelLOO) is the RSME (root mean square error).")
-fullcap10 <- paste0("Figure ", ref(paste0(figset,"fig10"), pre=pre), ". ", thecap)
-```
-
-```{r appd-nspawners-loo56, echo=FALSE, fig.cap=fullcap10, fig.width=8, fig.height=figh, message=FALSE, warning=FALSE, eval=FALSE}
-p <- looplot1(resfun="looRMSE", type="ns1956")
 p
 ```
 

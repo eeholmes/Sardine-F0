@@ -11,7 +11,8 @@ header-includes: \usepackage[labelformat=empty]{caption}
 
 Generic setup code common across all Rmds; run code in setup.Rmd if not knitting.
 --> 
-```{r child = file.path(here::here(),'setup.Rmd')}
+
+```{r child = file.path(here::here(), 'setup.Rmd')}
 ```
 
 ```{r echo=FALSE}
@@ -26,7 +27,7 @@ if(Supplement){
 }
 ```
 
-```{r child = file.path(here::here(),'AppendixFiles','Appendix-Variables.Rmd')}
+```{r child = file.path(here::here(), 'AppendixFiles','Appendix-Variables.Rmd')}
 ```
 
 ```{r getcovnames, echo=FALSE}
@@ -111,10 +112,16 @@ seltable[is.na(seltable)] <- NA
 seltable[,2:n] <- round(seltable[,2:n], digits=2)
 thecap=paste("Landings data and environmental covariates, part 1. W=Oct-Mar Kerala landings.  S=Jul-Sep Kerala landings. Values have been rounded to 2 digits. ns- = nearshore (0-80km) boxes 2 to 5 in Figure 1 (main text). r- = regional (0-160km) boxes 1 to 5 and 7 to 10. o-Precip is precipitation over the ocean; l-Precip is precipitation over land.")
 fullcap=paste("Table ", ref(paste0(tabset, "data"), pre=pre), ". ", thecap, sep="")
-# kable(seltable, align=paste0("l", rep("c", n-1)), caption=fullcap, row.names=FALSE, escape=FALSE)
 al <- paste0("l", paste0(rep("c", n - 1), collapse=""))
-# if(isLatex) kableExtra::landscape(knitr::kable(seltable, align=al, caption=fullcap, row.names=FALSE, escape=FALSE))
-kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+if(isLatex){ 
+  latexkable(seltable, fullcap, first.align="l")
+  #kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+}else{
+  library(kableExtra)
+seltable %>%
+  kbl(caption = fullcap, escape=FALSE, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse=""))) %>%
+  kable_classic(full_width = FALSE)
+}
 ```
 
 ```{r, results="asis", echo=FALSE}
@@ -131,10 +138,16 @@ seltable[is.na(seltable)] <- NA
 seltable[,2:n] <- round(seltable[,2:n], digits=2)
 thecap=paste("Landings data and environmental covariates, part 2.")
 fullcap=paste("Table ", ref(paste0(tabset,"data-chl"), pre=pre), ". ", thecap, sep="")
-# kable(seltable, align=paste0("l", rep("c", n-1)), caption=fullcap, row.names=FALSE, escape=FALSE)
 al <- paste0("l", paste0(rep("c", n - 1), collapse=""))
-# if(isLatex) kableExtra::landscape(knitr::kable(seltable, align=al, caption=fullcap, row.names=FALSE, escape=FALSE))
-kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+if(isLatex){ 
+  latexkable(seltable, fullcap, first.align="l")
+  #kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+}else{
+  library(kableExtra)
+seltable %>%
+  kbl(caption = fullcap, escape=FALSE, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse=""))) %>%
+  kable_classic(full_width = FALSE)
+}
 ```
 
 ```{r, results="asis", echo=FALSE}
@@ -151,8 +164,14 @@ seltable[is.na(seltable)] <- NA
 seltable[,2:n] <- round(seltable[,2:n], digits=2)
 thecap=paste("Landings data and environmental covariates, part 3.")
 fullcap=paste("Table ", ref(paste0(tabset,"data-chl"), pre=pre), ". ", thecap, sep="")
-# kable(seltable, align=paste0("l", rep("c", n-1)), caption=fullcap, row.names=FALSE, escape=FALSE)
 al <- paste0("l", paste0(rep("c", n - 1), collapse=""))
-# if(isLatex) kableExtra::landscape(knitr::kable(seltable, align=al, caption=fullcap, row.names=FALSE, escape=FALSE))
-kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+if(isLatex){ 
+  latexkable(seltable, fullcap, first.align="l")
+  #kable(seltable, align=al, caption=fullcap, escape=FALSE, row.names=FALSE)
+}else{
+  library(kableExtra)
+seltable %>%
+  kbl(caption = fullcap, escape=FALSE, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse=""))) %>%
+  kable_classic(full_width = FALSE)
+}
 ```

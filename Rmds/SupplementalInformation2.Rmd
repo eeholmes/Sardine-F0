@@ -7,7 +7,7 @@ output:
 header-includes: \usepackage[labelformat=empty]{caption}
 ---
 
-```{r child = 'setup.Rmd'}
+```{r child = file.path(here::here(), 'setup.Rmd')}
 ```
 
 ```{r echo=FALSE}
@@ -31,18 +31,18 @@ knitr::include_graphics(figfile)
 cat("\\clearpage")
 ```
 
-# Data Sources
-
-```{r child = file.path('SupplementFiles', 'Table App Data.Rmd')}
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table App Data.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
 
-# Raw Data
+## Raw Data
 
-```{r child = file.path('SupplementFiles', 'Table App H data.Rmd')}
+The data used in the paper were prepared from monthly data in the SardineForecast package. csv of those data can be found in the data folder in the repository. The file `setup.Rmd` has the code to make the data in this table.
+
+```{r child = file.path(here::here(), 'SupplementFiles', 'Table App H data.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}

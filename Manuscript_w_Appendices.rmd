@@ -1,4 +1,11 @@
-# Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)
+---
+title: 'Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*)'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+---
 
 *data version SardineForecast `r packageVersion("SardineForecast")`* (accepted paper used 1.11)
 
@@ -60,8 +67,6 @@ this long-term data set. We also thank the many INCOIS, CMLRE, and CMFRI
 scientists who participated in the research visits and who helped us
 understand the biology, fishery and fishery data and gave input into the
 analyses.
-
-# 
 
 # ABSTRACT
 
@@ -165,8 +170,6 @@ study the utility of using these environmental covariates to improve
 out-of-sample landings predictions for the oil sardine, with the
 ultimate goal of improving short-term operational forecasts.
 
-## 
-
 ## 1.1 Modeling and forecasting fishery landings
 
 The modeling and forecasting of landings using time-series models has a
@@ -210,9 +213,7 @@ correlation with nearshore productivity, juvenile growth and survival,
 and movement into or out of the nearshore (where they are exposed to the
 fishery); see Table 1.
 
-### 
-
-### 1.2 Study area
+## 1.2 Study area
 
 The study area is located off the Kerala coast of India (Figure 1 and
 2), where the majority of Indian oil sardines are landed and where this
@@ -231,9 +232,7 @@ Shafeeque et al., 2019). Primary productivity subsides after September,
 whereas mesozooplankton abundances increase and remain high in the
 post-monsoon period (Madhupratap et al., 2001).
 
-### 
-
-### 1.3 Oil sardine life cycle and fishery interaction
+## 1.3 Oil sardine life cycle and fishery interaction
 
 The Indian oil sardine fishery is restricted to the narrow strip of the
 western Indian continental shelf, \<20 km offshore (Figure 1; Rohit et
@@ -315,8 +314,6 @@ online databases (1985--2015). See the Supplemental Information: Data
 sources and raw data. These data were log transformed to stabilize
 variance and to facilitate additive modeling.
 
-## 
-
 ## 2.2 Environmental data
 
 We analyzed monthly composites of SST, chlorophyll-a concentration,
@@ -369,7 +366,7 @@ on abundance or lower catchability due to movement offshore to avoid
 nearshore anoxia and prior year effects which would arise via cohort
 strength in the prior year. The first index was the SST differential
 between nearshore and 3° longitude offshore, based on Naidu, Kumar, and
-Babu (1999) and BR et al. (2008). This index has a strong temporal
+Babu (1999) and BR et al. (2008). This index has a strong temporal
 association with chlorophyll-a blooms (Figure 3) and is able to measure
 upwelling arising due to both remote-forcing and local wind stress. SSTs
 were obtained from the AVHRR remote-sensing data set described above.
@@ -428,8 +425,6 @@ fluctuations in oil sardine landings. For ONI, PDO and AMO indices, we
 created an annual covariate from the average July *t-1* to June *t*
 values. The yearly average was computed this way so that it would not
 overlap with the July-September catch that we are forecasting.
-
-## 
 
 ## 2.3 Base catch models
 
@@ -521,9 +516,7 @@ years test was performed by removing each year in the series
 sequentially and repeating the model selection analysis (Supporting
 Information: Validation of catch base models, Figures S1-S5).
 
-## 
-
-## Covariate analysis
+## 2.4 Covariate analysis
 
 Once the base catch models were determined, the environmental covariates
 (Section 2.2) were studied. The covariate models were selected to test
@@ -561,8 +554,6 @@ $ln(C_{i,t}) = {M + \alpha}_{t} + \beta_{t}V_{t} + \epsilon_{t}$.
 All statistical analysis was completed in the R programming language (R
 Development Core Team, 2019) using the mcgv (Wood, 2011) and MARSS
 (Holmes, Ward, & Wills, 2012) R packages.
-
-# 
 
 # 3 RESULTS
 
@@ -621,8 +612,6 @@ Both models were included as base models for the October--March catch as
 one had the best model fit while the other had better out-of-sample
 prediction. Both were supported based on the influential years analysis
 (Supporting Information; Figures S1-S5).
-
-## 
 
 ## 3.2 Environmental covariate selection
 
@@ -742,8 +731,6 @@ SST and AMO index improved the model fit over the entire time series
 covariates), but especially so from the mid-1980s to late-1990s (Figure
 8).
 
-# 
-
 # 4 DISCUSSION
 
 Our results indicate that successful modeling of Indian oil sardine
@@ -756,7 +743,7 @@ monsoon rainfall over land, and one ocean climate index, the Atlantic
 Multidecadal Oscillation index, improved both model fit and
 out-of-sample prediction.
 
-**4.1 Monsoon versus post-monsoon model performance**
+## 4.1 Monsoon versus post-monsoon model performance
 
 The July-September catch, which overlaps with the summer monsoon and a
 seasonal fishery closure, is difficult to model. The best July-September
@@ -788,7 +775,7 @@ predictive errors. Forecasting all quarters together as a yearly catch
 means that the high variability in the July-September catch will hide
 the predictability of the subsequent October-March catch.
 
-**4.2 Sea surface temperature**
+## 4.2 Sea surface temperature
 
 The SST in October--December, the period of larval and early juvenile
 development, may affect survival and growth in multiple ways and thus
@@ -841,7 +828,7 @@ AMO index that we (and Hamza et al., 2020) found is likely a reflection
 of this large-scale teleconnection that manifests, in part, as
 correlation between regional SST and the AMO index.
 
-**4.3 Precipitation**
+## 4.3 Precipitation
 
 Since early studies of oil sardines, precipitation during the summer
 monsoon has been studied as a variable to explain catch fluctuations
@@ -874,7 +861,7 @@ current year catch and thus may reflect a temporary movement of fish
 offshore (away from the fishery) to avoid anoxia rather than a lower
 cohort strength that would persist into the next season.
 
-**4.4 Upwelling**
+## 4.4 Upwelling
 
 Despite the strong connections of upwelling with productivity which
 positively impacts sardine recruitment, growth, and survival, none of
@@ -931,7 +918,7 @@ only available after 1997, the power of our tests was limited, but this
 suggests that fall chlorophyll-a concentration, after the summer peak
 chlorophyll-a blooms, may prove useful for improving forecasts.
 
-**4.5 Oil sardine collapses**
+## 4.5 Oil sardine collapses
 
 There were four years when October-March oil sardine landings were much
 lower than expected based on prior catches: 1986, 1991, 1994 and 2013.
@@ -1528,6 +1515,9 @@ the Atlantic Meridional Overturning Circulation in Atlantic Multidecadal
 Variability and associated climate impacts. *Reviews of Geophysics*,
 *57*(2), 316--375. https://doi.org/10.1029/2019RG000644
 
+<!--
+# html version has legends with each figure
+
 # FIGURE LEGENDS
 
 **FIGURE 1** The study area, located off the southwestern coast of
@@ -1598,200 +1588,27 @@ were z-scored (mean removed and standardized to variance of 1) and
 included as a third-order polynomial to allow a non-linear effect. The
 plot shows the RMSE of the model residuals computed on a 10-year sliding
 window.
+-->
 
-**TABLE 1** Covariate models for the July--September (*S~t~*) and
-October--March (*W~t~*) landings. In the model (left) column, the first
-line is the environmental covariate. The response variable and the
-mechanism by which the covariate is postulated to affect catch is shown
-below the covariate (see Notes for the codes). The tests did not impose
-a direction (positive or negative) and some environmental covariates
-have been hypothesized to have both positive and negative impacts on oil
-sardines.
+# TABLES
 
-+----------------------------------+----------------------------------+
-| > **Model**                      | > **Description and              |
-|                                  | > justification**                |
-+----------------------------------+----------------------------------+
-| Jun--Jul and Apr-Mar ocean       | > Precipitation over the ocean   |
-| precipitation                    | > may directly or indirectly     |
-|                                  | > prompt spawning, after which   |
-| AF: *S~t~*                       | > spent adults migrate inshore   |
-|                                  | > and are exposed to the         |
-|                                  | > nearshore fishery.             |
-+----------------------------------+----------------------------------+
-| Jun--Jul land precipitation      | > Summer monsoon precipitation   |
-|                                  | > over land leads to high        |
-| AF: *S~t~*                       | > nutrient input from river      |
-|                                  | > discharge. At high levels,     |
-| GS: *W~t~, W~t+1~, S~t+1~*       | > this leads to eutrophication   |
-|                                  | > and anoxia, which drives       |
-|                                  | > adults off-shore away from the |
-|                                  | > fishery. At moderate levels,   |
-|                                  | > this supports nearshore        |
-|                                  | > productivity.                  |
-+----------------------------------+----------------------------------+
-| Apr--Mar ocean precipitation     | > Spring precipitation is an     |
-|                                  | > indicator of climatic          |
-| SS: *W~t~, W~t+1~, S~t+1~*       | > conditions during egg          |
-|                                  | > development, which aﬀect       |
-|                                  | > spawning success and thus the  |
-|                                  | > cohort strength.               |
-+----------------------------------+----------------------------------+
-| Jun--Sep upwelling               | > Upwelling drives phytoplankton |
-|                                  | > blooms which bring fish closer |
-| AF: *S~t~*                       | > to the coast (and the fishery) |
-|                                  | > and which promote larval and   |
-| GS+AF: *W~t~*                    | > juvenile growth and survival.  |
-|                                  | > However extreme upwelling      |
-| GS: *W~t~, W~t+1~, S~t+1~*       | > advects phytoplankton biomass  |
-|                                  | > offshore and brings hypoxic    |
-|                                  | > water to the surface.          |
-+----------------------------------+----------------------------------+
-| Mar--May r-SST                   | > Extreme pre-monsoon heating    |
-|                                  | > events drive mature fish from  |
-| AF: *S~t~*                       | > spawning areas, resulting in   |
-|                                  | > poor recruitment and fewer     |
-| *SS: W~t~, W~t+1~, S~t+1~*       | > 0-year fish.                   |
-+----------------------------------+----------------------------------+
-| Oct--Dec ns-SST                  | > October-December are the peak  |
-|                                  | > somatic growth months, and     |
-| GS: *W~t~, W~t+1~, S~t+1~*       | > larval and juvenile growth and |
-|                                  | > survival are aﬀected by        |
-|                                  | > temperature in the nearshore   |
-|                                  | > feeding area.                  |
-+----------------------------------+----------------------------------+
-| Jul-Sep and Oct-Dec CHL          | > Surface chlorophyll-a          |
-|                                  | > concentration is a proxy for   |
-| AF: *S~t~*                       | > phytoplankton abundance. Peak  |
-|                                  | > chlorophyll-a concentration is |
-| GS+AF: *W~t~*                    | > in July-September while        |
-|                                  | > October-December are critical  |
-| GS: *W~t+1~, S~t+1~*             | > months for juvenile growth and |
-|                                  | > survival.                      |
-+----------------------------------+----------------------------------+
-| 2.5-year average r-SST           | > Spawning, early survival, and  |
-|                                  | > recruitment depend on many     |
-| IA: *S~t~, W~t~, W~t+1~, S~t+1~* | > cascading factors summarized   |
-|                                  | > by the average regional SST    |
-|                                  | > over the lifespan of an oil    |
-|                                  | > sardine.                       |
-+----------------------------------+----------------------------------+
-| ONI, PDO, AMO                    | > The large-scale ocean climate  |
-|                                  | > has impacts on precipitation,  |
-| IA: *S~t~, W~t~, W~t+1~, S~t+1~* | > SST, wind, currents and        |
-|                                  | > upwelling patterns in the      |
-|                                  | > south-western Indian Ocean.    |
-|                                  | > These in turn have cascading   |
-|                                  | > impacts on spawning, early     |
-|                                  | > survival and abundance.        |
-+----------------------------------+----------------------------------+
-| Sep-Nov DMI                      | > Negative DMI values in         |
-|                                  | > September--November are        |
-| GS+AF: *W~t~*                    | > associated with anoxic events  |
-|                                  | > along the Kerala coast which   |
-| GS: *W~t~, W~t+1~, S~t+1~*       | > drive fish offshore and reduce |
-|                                  | > juvenile growth and survival.  |
-+----------------------------------+----------------------------------+
-| *Notes.* Model codes: AF,        |                                  |
-| availability to the nearshore    |                                  |
-| fishery (movement inshore        |                                  |
-| increases availability while     |                                  |
-| movement offshore reduces        |                                  |
-| availability); SS, spawning      |                                  |
-| success; GS, growth and          |                                  |
-| survival; IA, integrated         |                                  |
-| abundance. Environmental         |                                  |
-| covariates codes: r-SST,         |                                  |
-| regional (0-160km) sea surface   |                                  |
-| temperature; ns-SST, nearshore   |                                  |
-| (0-80km) sea surface             |                                  |
-| temperature; CHL, chlorophyll-a  |                                  |
-| surface concentration; ONI,      |                                  |
-| Oceanic Niño Index; DMI, Dipole  |                                  |
-| Mode Index; PDO, Pacific Decadal |                                  |
-| Oscillation index; AMO, Atlantic |                                  |
-| Multidecadal Oscillation index.  |                                  |
-+----------------------------------+----------------------------------+
-|                                  |                                  |
-+----------------------------------+----------------------------------+
+```{r child = file.path(here::here(), 'Rmds','Table_1.Rmd')}
+```
 
-**TABLE 2** Best-performing GAM models for the July--September ($S_{t})$
-and October--March ($W_{t}$) catches. M is the base models with only
-prior catch as covariates. To the base models, the environmental
-covariates are added. Nearshore SST is 0-80km from the coast and
-regional SST is 0-160km. The full set of nested covariate models with
-all tested environmental variables are given in Tables A1, A2 and Table
-S7.
+### &nbsp;
 
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Model                                                                                                                      Res. df   Adj. R^2^   RMSE   AICc                     LOOCV                              LOOCV
-                                                                                                                                                                                                                      
-                                                                                                                                                                                   RMSE                               MdAE
-  -------------------------------------------------------------------------------------------------------------------------- --------- ----------- ------ ------------------------ ---------------------------------- ----------------------------------
-  **July-Sept catch 1983-2015**                                                                                                                                                                                        
+### &nbsp;
 
-  null model: $ln(S_{t}) = ln(S_{t - 1}) + \epsilon_{t}$                                                                     33                    1.60   126.6                    1.60                               0.56
 
-  M0: $ln(S_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$                                                                 30        21.7        1.20   115.2                    1.31                               0.69
+```{r child = file.path(here::here(), 'Rmds','Table_2.Rmd')}
+```
 
-  covariate model: $ln(S_{t})$ = M0 + $s(V)$                                                                                                                                                                          
+# FIGURES
 
-  $V$ = Jun-Sep nearshore SST *t*                                                                                            27.4      32.5        1.07   115.2                    1.31                               0.62$\ddagger \ddagger$
+```{r child = file.path(here::here(), 'Rmds','Figures.Rmd')}
+```
 
-  $V$ = Jun-Jul precipitation over land *t*                                                                                  28        29.9        1.10   115.3                    1.33                               0.62$\ddagger \ddagger$
+# APPENDICES
 
-  $V$ = 2.5-year ave. regional SST *t*                                                                                       28.1      47          0.96   105.7$\dagger \dagger$   1.38                               0.56$\ddagger \ddagger$
-
-  $V$ = AMO ave. Jul-Jun *t*                                                                                                 27.5      47.5        0.94   106.6$\dagger \dagger$   1.22$\ddagger$                     0.56$\ddagger \ddagger$
-
-                                                                                                                                                                                                                       
-
-  **October-March catch - simpler model 1983-2014**                                                                                                                                                                   
-
-  null model: $ln(W_{t}) = ln(W_{t - 1}) + \epsilon_{t}$                                                                     32                    1.00   92.9                     1.00                               0.26
-
-  M1: $ln(W_{t}) = \alpha + s(ln(W_{t - 1})) + \epsilon_{t}$                                                                 29.1      45.9        0.82   87.7                     0.96                               0.32
-
-  covariate model: $ln(W_{t})$ = M1 + $s(V)$                                                                                                                                                                          
-
-  $V$ = Jun-Jul precipitation over land *t*                                                                                  26.9      59.6        0.69   82.1$\dagger \dagger$    0.91$\ddagger$                     0.25$\ddagger \ddagger \ddagger$
-
-  $V$ = 2.5-year ave. regional SST *t*                                                                                       27.1      65.9        0.63   76.4$\dagger \dagger$    0.77$\ddagger \ddagger$            0.41
-
-  $V$ = Sep-Nov DMI *t-1*                                                                                                    26        44.4        0.79   94.3                     0.95                               0.34
-
-  $V$= AMO ave. Jul-Jun *t*                                                                                                  26.6      63.8        0.64   79.4$\dagger \dagger$    0.81$\ddagger \ddagger$            0.38
-
-                                                                                                                                                                                                                       
-
-  **October-March catch - more complex model 1983-2014**                                                                                                                                                              
-
-  M2: $\ln\left( W_{t} \right) = \alpha + s\left( \ln\left( W_{t - 1} \right) \right) + \ s(ln(S_{t - 2})) + \epsilon_{t}$   26.6      57.3        0.70   84.6                     1.06                               0.34
-
-  covariate model: $ln(W_{t})$ = M2 + $s(V)$                                                                                                                                                                          
-
-  $V$ = Jun-Jul precipitation over land *t*                                                                                  24.6      70.5        0.56   77.5$\dagger \dagger$    0.96$\ddagger$                     0.29$\ddagger \ddagger$
-
-  $\text{V\ }$= 2.5-year ave. regional SST *t*                                                                               24.8      69.5        0.57   78.1$\dagger \dagger$    0.82$\ddagger \ddagger \ddagger$   0.35
-
-  $V$ = Sep-Nov DMI *t-1*                                                                                                    23.8      69.1        0.56   81.1$\dagger$            0.87$\ddagger \ddagger$            0.34
-
-  $\text{V\ }$= AMO ave. Jul-Jun *t*                                                                                         24.3      65.6        0.60   83.1                     0.91$\ddagger \ddagger$            0.29$\ddagger \ddagger$
-
-                                                                                                                                                                                                                       
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Notes: LOOCV = Leave one out cross-validation. RMSE = root mean square
-error. MdAE = median absolute error. AICc = Akaike Information Criterion
-corrected for small sample size. $\dagger$ and $\dagger \dagger$ = AICc
-greater than 2 and greater than 5 below base catch model (M).
-$\ddagger$, $\ddagger \ddagger$, and $\ddagger \ddagger \ddagger$ =
-LOOCV RMSE and MdAE 5%, 10% and 20% below model M, respectively. $t$
-indicates the covariate from the current year while t-1 indicates from
-the prior year. For covariates that are multiyear, $t$ is the last
-calendar year (i.e., the 2014 multiyear average regional SST is January
-2012 to June 2014). The equations with s() are GAM models where the
-covariates has a non-linear response (defined by a spline based
-smoothing function). The full set of nested tests for the base catch
-models (no environmental covariates) are given in the Supporting
-Information, Tables S1-S6.
+```{r child = file.path(here::here(), 'Rmds','Appendices.Rmd')}
+```

@@ -1,0 +1,50 @@
+---
+title: 'Table 1'
+output:
+  html_document: default
+---
+
+```{r echo=FALSE}
+desc <- c(
+"Precipitation over the ocean may directly or indirectly prompt spawning, after which spent adults migrate inshore and are exposed to the nearshore fishery.",
+"Summer monsoon precipitation over land leads to high nutrient input from river discharge. At high levels, this leads to eutrophication and anoxia, which drives adults off-shore away from the fishery. At moderate levels, this supports nearshore productivity.",
+"Spring precipitation is an indicator of climatic conditions during egg development, which aﬀect spawning success and thus the cohort strength.",
+"Upwelling drives phytoplankton blooms which bring fish closer to the coast (and the fishery) and which promote larval and juvenile growth and survival. However extreme upwelling advects phytoplankton biomass offshore and brings hypoxic water to the surface.",
+"Extreme pre-monsoon heating events drive mature fish from spawning areas, resulting in poor recruitment and fewer 0-year fish.",
+"October-December are the peak somatic growth months, and larval and juvenile growth and survival are aﬀected by temperature in the nearshore feeding area.",
+"Surface chlorophyll-a concentration is a proxy for phytoplankton abundance. Peak chlorophyll-a concentration is in July-September while October-December are critical months for juvenile growth and survival.",
+"Spawning, early survival, and recruitment depend on many cascading factors summarized by the average regional SST over the lifespan of an oil sardine.", 
+"The large-scale ocean climate has impacts on precipitation, SST, wind, currents and upwelling patterns in the south-western Indian Ocean. These in turn have cascading impacts on spawning, early survival and abundance.",
+"Negative DMI values in September–November are associated with anoxic events along the Kerala coast which drive fish offshore and reduce juvenile growth and survival."
+)
+mod=c(
+  "Jun-Jul and Apr-Mar ocean precipitation<br>&nbsp;&nbsp;&nbsp;AF: *S~t~*",
+  "Jun–Jul land precipitation<br>&nbsp;&nbsp;&nbsp;AF: *S~t~*<br>&nbsp;&nbsp;&nbsp;GS: *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Apr–Mar ocean precipitation<br>&nbsp;&nbsp;&nbsp;SS: *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Jun–Sep upwelling<br>&nbsp;&nbsp;&nbsp;AF: *S~t~*<br>&nbsp;&nbsp;&nbsp;GS+AF: *W~t~*<br>&nbsp;&nbsp;&nbsp;GS: *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Mar–May r-SST<br>&nbsp;&nbsp;&nbsp;AF: *S~t~*<br>&nbsp;&nbsp;&nbsp;SS: *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Oct–Dec ns-SST<br>&nbsp;&nbsp;&nbsp;GS: *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Jul-Sep and Oct-Dec CHL<br>&nbsp;&nbsp;&nbsp;AF: *S~t~*<br>&nbsp;&nbsp;&nbsp;GS+AF: *W~t~*<br>&nbsp;&nbsp;&nbsp;GS: *W~t+1~*, *S~t+1~*",
+  "2.5-year average r-SST<br>&nbsp;&nbsp;&nbsp;IA: *S~t~*, *W~t~*, *W~t+1~*, *S~t+1~*",
+  "ONI, PDO, AMO<br>&nbsp;&nbsp;&nbsp;IA: *S~t~*, *W~t~*, *W~t+1~*, *S~t+1~*",
+  "Sep-Nov DMI<br>&nbsp;&nbsp;&nbsp;GS+AF: *W~t~*<br>&nbsp;&nbsp;&nbsp;GS: *W~t~*, *W~t+1~*, *S~t+1~*"
+)
+fullcap <- "Table 1. Covariate models for the July-September (*S~t~*) and
+October--March (*W~t~*) landings. In the model (left) column, the first
+line is the environmental covariate. The response variable and the
+mechanism by which the covariate is postulated to affect catch is shown
+below the covariate (see Notes for the codes). The tests did not impose
+a direction (positive or negative) and some environmental covariates
+have been hypothesized to have both positive and negative impacts on oil
+sardines."
+notes <- "Model codes: AF, availability to the nearshore fishery (movement inshore increases availability while movement offshore reduces availability); SS, spawning success; GS, growth and survival; IA, integrated abundance. Environmental covariates codes: r-SST, regional (0-160km) sea surface temperature; ns-SST, nearshore (0-80km) sea surface temperature; CHL, chlorophyll-a surface concentration; ONI, Oceanic Niño Index; DMI, Dipole Mode Index; PDO, Pacific Decadal Oscillation index; AMO, Atlantic Multidecadal Oscillation index."
+library(kableExtra)
+df <- data.frame(Model=mod, Description=desc)
+df %>%
+  kbl(caption = fullcap, escape=FALSE, align="ll") %>%
+  kable_classic() %>%
+  column_spec(1, width = "20em", extra_css = "vertical-align:top;") %>%
+  column_spec(2, width = "30em", extra_css = "vertical-align:top;") %>%
+  row_spec(1:10, extra_css = "border-bottom: 1px solid") %>%
+  footnote(general = notes, general_title = "Notes: ", footnote_as_chunk = TRUE)
+```

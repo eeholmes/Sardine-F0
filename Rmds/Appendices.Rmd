@@ -1,33 +1,35 @@
 ---
-title: 'Appendices: Covariate tests'
+title: 'Appendices'
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
   word_document: default
 header-includes: \usepackage[labelformat=empty]{caption}
 ---
 
 ```{r include=FALSE}
 #here::set_here()
-here::i_am("Appendices-FO.Rmd")
+#here::i_am("Rmds/Appendices.Rmd")
 ```
+
+## Tables A1 and A2
 
 ```{r child = file.path(here::here(), 'AppendixFiles','AppendixSpawner.Rmd')}
 ```
 
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
+if(isLatex) cat("### &nbsp;")
 ```
 
 ```{r child = file.path(here::here(), 'AppendixFiles','AppendixNonSpawnerwoS2.Rmd')}
 ```
 
-```{r child = file.path(here::here(), 'AppendixFiles','AppendixNonSpawner.Rmd'), eval=FALSE}
-```
-
 ```{r, results="asis", echo=FALSE}
 cat("\\clearpage")
 ```
+
+## Figures A1 and A2
 
 ```{r child = file.path(here::here(), 'AppendixFiles','Figure_outliers.Rmd')}
 ```

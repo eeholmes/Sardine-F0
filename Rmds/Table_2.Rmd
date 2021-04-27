@@ -1,0 +1,157 @@
+---
+title: 'Table 2'
+output:
+  html_document: default
+---
+
+```{r child = file.path(here::here(),'setup.Rmd')}
+```
+
+```{r child = file.path(here::here(),'AppendixFiles','Appendix-Functions.Rmd')}
+```
+
+```{r child = file.path(here::here(),'AppendixFiles','Appendix-Variables.Rmd')}
+```
+
+
+```{r tab3-spawncovnames, echo=FALSE}
+# Make sure data used is consistent across appendices and here
+vars <- getspawnercovs()
+datcommon <- dat.spawners[, 
+  c("Year", "spawners0", "spawners1", "spawners2",
+    "nspawners1", "nspawners2", vars$allcovnames)]
+datcommon <- na.omit(datcommon)
+covnamelist = list(
+    `Jul-Sep catch`=c(
+      "SST.2.5.mon6to9.", 
+      "Precip.Kerala.mon6to7.",
+      "SST.2.10.3.yr.runsum.",
+      "AMO.mon7to6.")
+    )
+covlags = list(
+  SST.2.5.mon6to9. = 0,
+  Precip.Kerala.mon6to7. = 0,
+  Bakun.UPW.mon6to9. = 0,
+  DMI.3.yr.runsum. = 0,
+  SST.2.10.3.yr.runsum. = 0,
+  AMO.mon7to6. = 0)
+allcovnames <- c()
+covnames <- unlist(covnamelist)
+for(i in covnames) allcovnames <- c(allcovnames, 
+   paste0(i, covlags[[i]]))
+dat <- datcommon[, 
+  c("Year", "spawners0", "spawners1", "spawners2",
+    "nspawners1", "nspawners2", allcovnames)]
+NE=mean(abs(dat$spawners0-dat$spawners1))
+```
+
+```{r tab3-spawnerapptabeqns, echo=FALSE}
+nullmod <- "$ln(S_t) = ln(S_{t-1}) + \\epsilon_t$"
+basemod <- "$ln(S_t) = \\alpha + s(ln(W_{t-1})) + \\epsilon_t$"
+resp <- "ln(S_t)"
+baseformula <- "spawners0 ~ s(nspawners1, sp=0.6)"
+nullformula <- "spawners0 ~ -1 + offset(spawners1)"
+```
+
+```{r tab3-spawntable}
+headval <- paste0("**July-Sept catch ", min(dat$Year), "-", max(dat$Year), "**")
+seltable <- maketable3(dat, nullmod, basemod, nullformula, baseformula, resp, covnamelist, covlags, type="nonlinear", include.num=FALSE, include.group=FALSE, header=headval, compact=TRUE)
+```
+
+```{r tab3-nonspawncovnames, echo=FALSE}
+# Make sure data used is consistent across appendices and here
+vars <- getnonspawnercovs()
+datcommon <- dat.nonspawners[, 
+  c("Year", "nspawners0", "spawners1", "spawners2",
+    "nspawners1", "nspawners2", vars$allcovnames)]
+datcommon <- na.omit(datcommon)
+covnamelist = list(
+    `Oct-Mar catch - simpler model`=c(
+      "Precip.Kerala.mon6to7.",
+      "SST.2.10.3.yr.runsum.",
+      "DMI.mon9to11.",
+      "AMO.mon7to6.")
+    )
+covlags = list(
+  SST.2.5.mon6to9. = 0,
+  Precip.Kerala.mon6to7. = 0,
+  Bakun.UPW.mon6to9. = 0,
+  DMI.mon9to11. = 1,
+  AMO.mon7to6. = 0,
+  SST.2.10.3.yr.runsum. = 0)
+allcovnames <- c()
+covnames <- unlist(covnamelist)
+for(i in covnames) allcovnames <- c(allcovnames, 
+   paste0(i, covlags[[i]]))
+dat <- datcommon[, 
+  c("Year", "nspawners0", "spawners1", "spawners2",
+    "nspawners1", "nspawners2", allcovnames)]
+NE=mean(abs(dat$spawners0-dat$spawners1))
+```
+
+```{r tab3-nonspawnerapptabeqns, echo=FALSE}
+nullmod <- "$ln(W_t) = ln(W_{t-1}) + \\epsilon_t$"
+basemod <- "$ln(W_t) = \\alpha + s(ln(W_{t-1})) + \\epsilon_t$"
+resp <- "ln(W_t)"
+baseformula <- "nspawners0 ~ s(nspawners1, sp=0.6)"
+nullformula <- "nspawners0 ~ -1 + offset(nspawners1)"
+```
+
+```{r tab3-nonspawntable}
+headval <- paste0("**Oct-Mar catch - simpler model ", min(dat$Year), "-", max(dat$Year), "**")
+nonspawnerwoS2table <- maketable3(dat, nullmod, basemod, nullformula, baseformula, resp, covnamelist, covlags, type="nonlinear", include.num=FALSE, include.group=FALSE, header=headval, compact=TRUE)
+seltable <- rbind(seltable, nonspawnerwoS2table)
+```
+
+```{r tab3-nonspawncovnames2, echo=FALSE}
+covnamelist = list(
+    `Oct-Mar catch - more complex model`=c(
+      "Precip.Kerala.mon6to7.",
+      "SST.2.10.3.yr.runsum.",
+      "DMI.mon9to11.",
+      "AMO.mon7to6.")
+    )
+covlags = list(
+  DMI.mon9to11. = 1,
+  Precip.Kerala.mon6to7. = 0,
+  Bakun.UPW.mon6to9. = 0,
+  SST.2.10.3.yr.runsum. = 0,
+  AMO.mon7to6. = 0)
+allcovnames <- c()
+covnames <- unlist(covnamelist)
+for(i in covnames) allcovnames <- c(allcovnames, 
+   paste0(i, covlags[[i]]))
+dat <- datcommon[, 
+  c("Year", "nspawners0", "spawners2",
+    "nspawners1", allcovnames)]
+NE=mean(abs(dat$spawners0-dat$spawners1))
+```
+
+```{r tab3-nonspawnerapptabeqns2, echo=FALSE}
+nullmod <- "$ln(W_t) = ln(W_{t-1}) + \\epsilon_t$"
+basemod <- "$ln(W_t) = \\alpha + s(ln(W_{t-1})) + s(ln(S_{t-2})) + \\epsilon_t$"
+resp <- "ln(W_t)"
+baseformula <- "nspawners0 ~ s(nspawners1, sp=0.6) + s(spawners2, sp=0.6)"
+nullformula <- "nspawners0 ~ -1 + offset(nspawners1)"
+```
+
+```{r tab3-nonspawntable2}
+headval <- paste0("**Oct-Mar catch - more complex model ", min(dat$Year), "-", max(dat$Year), "**")
+nonspawnertable <- maketable3(dat, nullmod, basemod, nullformula, baseformula, resp, covnamelist, covlags, type="nonlinear", include.num=FALSE, include.group=FALSE, header="**Oct-Mar catch - more complex model**", compact=TRUE)
+seltable <- rbind(seltable, nonspawnertable)
+```
+
+```{r print-table3, echo=FALSE}
+seltable = seltable[,c("Model", "Residual.df", "Adj.R2", "RMSE", "AIC", "LOOCV", "LOOMd")]
+colnames(seltable) <- c("Model", "Resid. df", "Adj. R2", "RMSE", "AICc", "LOOCV RMSE", "LOOCV MdAE")
+if(isLatex) colnames(seltable)=c("Model", "\\shortstack{Resid.\\\\df}", "\\shortstack{Adj.\\\\$R^2$}", "RMSE", "AICc", "\\shortstack{LOOCV\\\\RMSE}", "\\shortstack{LOOCV\\\\MdAE}")
+
+fullcap=paste("Table 2. Top covariates for the monsoon (Jul-Sep) and post-monsoon (Oct-Mar) catch (*S~t~* and *W~t~*) models. M is the base models with only prior catch as covariates. To the base models, the  environmental covariates are added. ns-SST is nearshore (0-80km) and r-SST is regional (0-160km). The full set of nested covariate models and tests are given in the appendices.", sep="")
+notes <- "The nested F-tests are given in Supporting Information. LOOCV = Leave one out cross-validation. RMSE = root mean square error. MdAE = median absolute error. AICc = Akaike Information Criterion corrected for small sample size. $\\dagger$ and $\\dagger\\dagger$ = AICc greater than 2 and greater than 5 below model M (base catch model).  $\\ddagger$, $\\ddagger\\ddagger$, and ${\\ddagger}{\\ddagger}{\\ddagger}$  = LOOCV RMSE 5\\%, 10\\% and 20\\% below model M, respectively. *t* indicates current year and *t-1* is the prior year. If *t=2014*, *S~t~* is Jul 2014 to Sep 2014, *W~t~* is Oct 2014 to Mar 2015 and *W~t-1~* is Oct 2013 to Mar 2014. For environmental covariates that are multiyear, such as the multiyear average SST, *t* is the calendar year at the end of the multiyear span; thus the 2.5 year average SST for 2014 is Jan 2012 to Jun 2014."
+#kable(seltable, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse="")), caption=fullcap, escape=FALSE)
+library(kableExtra)
+seltable %>%
+  kbl(caption = fullcap, escape=FALSE, align=paste0("l", paste0(rep("c",dim(seltable)[2]-1),collapse=""))) %>%
+  kable_classic(full_width = FALSE) %>%
+  footnote(general = notes, general_title = "Notes: ", footnote_as_chunk = TRUE)
+```
