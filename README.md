@@ -1,6 +1,6 @@
 # Sardine-F0
 
-Repository for Holmes et al. 2021. Improving landings forecasts using environmental covariates: a case study on the Indian oil sardine (*Sardinella longiceps*). Fisheries Oceanography, in press April 2021.
+Repository for Holmes, E.E., BR, S., Nimit, K., Maity, S., Checkley, D.M., Jr., Wells, M.L. and Trainer, V.L. (2021), Improving landings forecasts using environmental covariates: A case study on the Indian oil sardine (Sardinella longiceps). Fisheries Oceanography 30(6): 623-642
 
 ## Paper
 
