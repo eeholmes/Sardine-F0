@@ -1,5 +1,7 @@
 # Sardine-F0
 
+[![DOI](https://zenodo.org/badge/361308628.svg)](https://zenodo.org/badge/latestdoi/361308628)
+
 Repository for Holmes, E.E., BR, S., Nimit, K., Maity, S., Checkley, D.M., Jr., Wells, M.L. and Trainer, V.L. (2021), Improving landings forecasts using environmental covariates: A case study on the Indian oil sardine (Sardinella longiceps). Fisheries Oceanography 30(6): 623-642
 
 ## Paper
